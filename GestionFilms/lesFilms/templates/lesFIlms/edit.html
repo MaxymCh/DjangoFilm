@@ -1,0 +1,76 @@
+{% extends "lesFilms/base.html" %}
+{% block title %}Edit{% endblock %}
+{% block content %}
+<form method="POST" class="post-form" action="{% url 'film_update' film.id %}">
+  {% csrf_token %}
+  <div class="container">
+    <br />
+    <div class="form-group row">
+      <label class="col-sm-1 col-form-label"></label>
+      <div class="col-sm-4">
+        <h3>Modifier le film</h3>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Film Id: {{ film.id }}</label>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Film titre:</label>
+      <div class="col-sm-4">
+        <input
+          type="text"
+          name="titre"
+          id="id_titre"
+          required
+          maxlength="100"
+          value="{{ film.titre }}"
+        />
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Film Réalisateur:</label>
+      <div class="col-sm-4">
+        <input
+          type="text"
+          name="realisateur"
+          id="id_realisateur"
+          required
+          maxlength="100"
+          value="{{ film.realisateur }}"
+        />
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Film déscription:</label>
+      <div class="col-sm-4">
+        <input
+          type="text"
+          name="description"
+          id="id_description"
+          required
+          maxlength="250"
+          value="{{ film.description }}"
+        />
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Film date de création:</label>
+      <div class="col-sm-4">
+        <input
+          type="date"
+          name="date_creation"
+          id="id_date_creation"
+          required
+          value="{{ film.date_creation|date:'Y-m-d' }}"
+        />
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-1 col-form-label"></label>
+      <div class="col-sm-4">
+        <button type="submit" class="btn btn-success">Valider</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
