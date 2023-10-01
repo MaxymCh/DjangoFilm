@@ -36,46 +36,63 @@
 </table>
 <br />
 <br />
-<center>
+
+<div class="justify-content-center d-flex">
   <a href="{% url 'realisateur_add' %}" class="btn btn-primary"
     >Ajouter un nouveau Réalisateur</a
   >
-</center>
-
+</div>
 <!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Supprimer le réalisateur</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Êtes-vous sûr de vouloir supprimer ce réalisateur ?
-        </div>
-        <div class="modal-footer">
-          <form action="" method="post" id="deleteForm">
-            {% csrf_token %}
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-            <button type="submit" class="btn btn-danger">Supprimer</button>
-          </form>
-        </div>
+<div
+  class="modal fade"
+  id="deleteModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Supprimer le réalisateur
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Êtes-vous sûr de vouloir supprimer ce réalisateur ?
+      </div>
+      <div class="modal-footer">
+        <form action="" method="post" id="deleteForm">
+          {% csrf_token %}
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-danger">Supprimer</button>
+        </form>
       </div>
     </div>
   </div>
-  
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    var deleteLinks = document.querySelectorAll('.open-deleteModal');
-    deleteLinks.forEach(function(link) {
-        link.addEventListener('click', function(e) {
-            var deleteUrl = e.target.getAttribute('data-url');
-            document.getElementById('deleteForm').action = deleteUrl;
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    var deleteLinks = document.querySelectorAll(".open-deleteModal");
+    deleteLinks.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        var deleteUrl = e.target.getAttribute("data-url");
+        document.getElementById("deleteForm").action = deleteUrl;
+      });
     });
-});
-
+  });
 </script>
 
 {% endblock %}

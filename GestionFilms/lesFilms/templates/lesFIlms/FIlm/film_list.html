@@ -1,6 +1,7 @@
 {% extends "lesFilms/base.html" %}
 {% block title %}Liste des Film{% endblock %}
 {% block content %}
+
 <table class="table table-striped table-bordered table-sm">
   <thead class="thead-dark">
     <tr>
@@ -39,11 +40,11 @@
 </table>
 <br />
 <br />
-<center>
+<div class="justify-content-center d-flex">
   <a href="{% url 'film_add' %}" class="btn btn-primary"
     >Ajouter un nouveau film</a
   >
-</center>
+</div>
 
 <!-- Modal -->
 <div
