@@ -1,22 +1,53 @@
 [
   {
+    "model": "lesFilms.realisateur",
+    "pk": 1,
+    "fields": {
+      "nom": "Nolan",
+      "prenom": "Christopher"
+    }
+  },
+  {
+    "model": "lesFilms.realisateur",
+    "pk": 2,
+    "fields": {
+      "nom": "Tarantino",
+      "prenom": "Quentin"
+    }
+  },
+  {
+    "model": "lesFilms.realisateur",
+    "pk": 3,
+    "fields": {
+      "nom": "Chazelle",
+      "prenom": "Damien"
+    }
+  },
+  {
+    "model": "lesFilms.realisateur",
+    "pk": 4,
+    "fields": {
+      "nom": "Joon-ho",
+      "prenom": "Bong"
+    }
+  },
+  {
     "model": "lesFilms.film",
     "pk": 1,
     "fields": {
       "titre": "Inception",
       "description": "Un voleur professionnel entre dans les rêves des gens pour leur voler des idées.",
-      "realisateur": "Christopher Nolan",
+      "realisateur": 1,
       "date_creation": "2010-10-03"
     }
   },
-
   {
     "model": "lesFilms.film",
     "pk": 2,
     "fields": {
       "titre": "Pulp Fiction",
       "description": "Les vies de plusieurs criminels de Los Angeles s'entrecroisent de manière imprévisible.",
-      "realisateur": "Quentin Tarantino",
+      "realisateur": 2,
       "date_creation": "1994-10-26"
     }
   },
@@ -26,7 +57,7 @@
     "fields": {
       "titre": "La La Land",
       "description": "Un musicien et une actrice tombent amoureux tout en essayant de réaliser leurs rêves à Los Angeles.",
-      "realisateur": "Damien Chazelle",
+      "realisateur": 3,
       "date_creation": "2017-01-25"
     }
   },
@@ -36,7 +67,7 @@
     "fields": {
       "titre": "Parasite",
       "description": "Une famille pauvre infiltre la vie d'une famille riche, avec des conséquences imprévues.",
-      "realisateur": "Bong Joon-ho",
+      "realisateur": 4,
       "date_creation": "2019-06-05"
     }
   },
@@ -46,7 +77,7 @@
     "fields": {
       "titre": "Interstellar",
       "description": "Un groupe d'explorateurs voyage à travers un trou de ver près de Saturne pour trouver un nouvel habitat pour l'humanité.",
-      "realisateur": "Christopher Nolan",
+      "realisateur": 1,
       "date_creation": "2014-11-05"
     }
   }
