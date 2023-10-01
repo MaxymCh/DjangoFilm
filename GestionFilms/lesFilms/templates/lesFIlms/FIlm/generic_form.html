@@ -1,0 +1,84 @@
+{% extends "lesFilms/base.html" %} {% block title %}{{ action_name }} {{
+class_name }}{% endblock %} {% block content %}
+<form method="post" class="post-form">
+  {% csrf_token %}
+  <div class="container">
+    <br />
+    <div class="form-group row">
+      <label class="col-sm-1 col-form-label"></label>
+      <div class="col-sm-4">
+        <h3>{{ action_description }} {{ class_name }}</h3>
+      </div>
+    </div>
+    {{ form.as_p }}
+    <div id="realisateurForm" style="display: none">
+      <h3>Création d'un réalisateur</h3>
+      <form id="realisateurFormActual">
+        {{ realisateur_form.as_p }}
+        <button type="button" id="realisateurFormSubmit">Valider</button>
+      </form>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-sm-1 col-form-label"></label>
+      <div class="col-sm-4">
+        <button type="submit" class="btn btn-success">Valider</button>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const realisateurSelect = document.querySelector(
+      'select[name="realisateur"]'
+    );
+    const realisateurFormDiv = document.getElementById("realisateurForm");
+    const realisateurFormSubmitBtn = document.getElementById(
+      "realisateurFormSubmit"
+    );
+    const nomInput = document.getElementById("id_nom");
+    const prenomInput = document.getElementById("id_prenom");
+
+    realisateurSelect.addEventListener("change", function () {
+      if (this.value == "create") {
+        realisateurFormDiv.style.display = "block";
+        nomInput.required = true;
+        prenomInput.required = true;
+      } else {
+        realisateurFormDiv.style.display = "none";
+        nomInput.required = false;
+        prenomInput.required = false;
+      }
+    });
+
+    realisateurSelect.dispatchEvent(new Event("change"));
+
+    realisateurFormSubmitBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      const formData = new FormData();
+      if(nomInput.checkValidity() && prenomInput.checkValidity())
+      formData.append("nom", document.getElementById("id_nom").value);
+      formData.append("prenom", document.getElementById("id_prenom").value);
+      fetch("{% url 'create_realisateur_in_film' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const newOption = new Option(data.name, data.id, true, true);
+          realisateurSelect.append(newOption);
+          realisateurFormDiv.style.display = "none";
+        });
+    });
+  });
+
+  function getCookie(name) {
+    let value = "; " + document.cookie;
+    let parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+  }
+</script>
+{% endblock %}

@@ -21,3 +21,6 @@ class Film(models.Model):
 
     def __str__(self):
         return f"Film {self.titre} de {self.realisateur.prenom} {self.realisateur.nom}"
+
+    def formatted_date(self):
+        return self.date_creation.strftime("%Y-%m-%d")

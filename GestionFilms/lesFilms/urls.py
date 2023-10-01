@@ -2,12 +2,25 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.film_show),
-    path("film/add", views.film_add, name="film_add"),
-    path("film/show", views.film_show, name="film_show"),
-    path("film/edit/<int:id>", views.film_edit, name="film_edit"),
-    path("film/update/<int:id>", views.film_update, name="film_update"),
-    path("film/delete/<int:id>", views.film_delete, name="film_delete"),
+    # Film
+    path("film/", views.FilmListView.as_view(), name="film_list"),
+    path("film/add", views.FilmCreate.as_view(), name="film_add"),
+    path(
+        "film/edit/<int:pk>",
+        views.FilmUpdate.as_view(),
+        name="film_edit",
+    ),
+    path(
+        "film/delete/<int:pk>/",
+        views.FilmDeleteView.as_view(),
+        name="film_delete",
+    ),
+    path(
+        "create_realisateur_in_film/",
+        views.create_realisateur_in_film,
+        name="create_realisateur_in_film",
+    ),
+    # Réalisateur
     path("realisateur/", views.RealisateurListView.as_view(), name="realisateur_list"),
     path("realisateur/add", views.RealisateurCreate.as_view(), name="realisateur_add"),
     path(
