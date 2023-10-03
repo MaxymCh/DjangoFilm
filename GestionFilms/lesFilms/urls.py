@@ -33,4 +33,17 @@ urlpatterns = [
         views.RealisateurDeleteView.as_view(),
         name="realisateur_delete",
     ),
+    # Acteur
+    path("acteur/", views.ActeurListView.as_view(), name="acteur_list"),
+    path("acteur/add", views.ActeurCreate.as_view(), name="acteur_add"),
+    path(
+        "acteur/edit/<int:pk>",
+        views.ActeurUpdate.as_view(),
+        name="acteur_edit",
+    ),
+    path(
+        "acteur/delete/<int:pk>/",
+        views.ActeurDeleteView.as_view(),
+        name="acteur_delete",
+    ),
 ]

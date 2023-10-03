@@ -1,5 +1,5 @@
 from django import forms
-from lesFilms.models import Film, Realisateur
+from lesFilms.models import Film, Realisateur, Acteur
 from django.forms import inlineformset_factory
 
 
@@ -31,4 +31,10 @@ class FilmForm(forms.ModelForm):
 class RealisateurForm(forms.ModelForm):
     class Meta:
         model = Realisateur
+        fields = "__all__"
+
+
+class ActeurForm(forms.ModelForm):
+    class Meta:
+        model = Acteur
         fields = "__all__"

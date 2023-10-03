@@ -2,8 +2,8 @@
 
 # Create your views here.
 
-from lesFilms.forms import FilmForm, RealisateurForm
-from lesFilms.models import Film, Realisateur
+from lesFilms.forms import FilmForm, RealisateurForm, ActeurForm
+from lesFilms.models import Film, Realisateur, Acteur
 
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -152,4 +152,53 @@ class RealisateurListView(ListView):
     )
     context_object_name = (
         "realisateurs"  # Nom de la variable à utiliser dans le template
+    )
+
+
+#Acteur 
+
+
+
+class ActeurCreate(CreateView):
+    model = Acteur
+    fields = "__all__"
+    template_name = "lesFilms/acteur/generic_form.html"
+    success_url = reverse_lazy("acteur_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["class_name"] = self.model.__name__
+        context["action_name"] = "Création"
+        context["action_description"] = "Entrez les informations du"
+        return context
+
+
+class ActeurUpdate(UpdateView):
+    model = Acteur
+    fields = "__all__"
+    template_name = "lesFilms/acteur/generic_form.html"
+    success_url = reverse_lazy("acteur_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["class_name"] = self.model.__name__
+        context["action_name"] = "Modifier le"
+        return context
+
+
+class ActeurDeleteView(DeleteView):
+    model = Acteur
+    success_url = reverse_lazy("acteur_list")
+
+    def get(self, *args, **kwargs):
+        return self.post(*args, **kwargs)
+
+
+class ActeurListView(ListView):
+    model = Acteur
+    template_name = (
+        "lesFilms/acteur/acteur_list.html"  # Nom du template à utiliser
+    )
+    context_object_name = (
+        "acteurs"  # Nom de la variable à utiliser dans le template
     )
