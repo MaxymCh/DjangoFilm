@@ -1,5 +1,5 @@
 __pycache__
 local_settings.py
 myenv
-db.sqlite3
+GestionFilms/db.sqlite3
 .vscode
