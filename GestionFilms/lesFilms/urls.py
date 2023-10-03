@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     # Film
-    path("film/", views.FilmListView.as_view(), name="film_list"),
+    path("", views.FilmListView.as_view(), name="film_list"),
     path("film/add", views.FilmCreate.as_view(), name="film_add"),
     path(
         "film/edit/<int:pk>",
