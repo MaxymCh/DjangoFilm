@@ -3,7 +3,7 @@
 # Create your views here.
 
 from lesFilms.forms import FilmForm, RealisateurForm, ActeurForm
-from lesFilms.models import Film, Realisateur, Acteur
+from lesFilms.models import Film, Realisateur, Acteur, verif_film_exist, verif_realisateur_exist
 
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -39,10 +39,17 @@ class FilmCreate(CreateView):
             if realisateur_form.is_valid():
                 realisateur = realisateur_form.save()
                 film = form.save(commit=False)
-                film.realisateur = realisateur
-                film.save()
-                self.object = film  # Assurez-vous que self.object est défini
-                return HttpResponseRedirect(self.get_success_url())
+                film_exist = verif_film_exist(film.titre)
+                print("azeuibfgzyueaigbzeiguzbeazie")
+                print(film_exist)
+                if film_exist is not None:
+                    # return une error
+                    print("erreur film existant")
+                else :
+                    film.realisateur = realisateur
+                    film.save()
+                    self.object = film  # Assurez-vous que self.object est défini
+                    return HttpResponseRedirect(self.get_success_url())
             else:
                 return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -74,9 +81,15 @@ class FilmUpdate(UpdateView):
                 realisateur = realisateur_form.save()
                 film = form.save(commit=False)
                 film.realisateur = realisateur
-                film.save()
-                self.object = film  # Assurez-vous que self.object est défini
-                return HttpResponseRedirect(self.get_success_url())
+                film_exist = verif_film_exist(film.titre)
+                print(film_exist)
+                if film_exist is not None:
+                    # return une error
+                    print("erreur film existant")
+                else :
+                    film.save()
+                    self.object = film  # Assurez-vous que self.object est défini
+                    return HttpResponseRedirect(self.get_success_url())
             else:
                 return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -124,6 +137,23 @@ class RealisateurCreate(CreateView):
         context["action_name"] = "Création"
         context["action_description"] = "Entrez les informations du"
         return context
+
+    def form_valid(self, form):
+        if form.is_valid():
+            realisateur = form.save()
+            realisateur_exist = verif_realisateur_exist(realisateur.nom)
+            print(realisateur_exist)
+            if realisateur_exist is not None:
+                # return une error
+                print("erreur realisateur existant")
+            else :
+                realisateur.save()
+                self.object = realisateur  # Assurez-vous que self.object est défini
+                return HttpResponseRedirect(self.get_success_url())
+            return JsonResponse({"id": realisateur.id, "name": str(realisateur)})
+        else:
+            return JsonResponse({"error": "Invalid form data"}, status=400)
+
 
 
 class RealisateurUpdate(UpdateView):

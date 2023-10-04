@@ -1,4 +1,5 @@
 from django.db import models
+from Levenshtein import distance
 
 # Create your models here.
 
@@ -32,4 +33,11 @@ class Film(models.Model):
     def formatted_date(self):
         return self.date_creation.strftime("%Y-%m-%d")
 
+def verif_film_exist(titre_film):
+    film_proche = Film.objects.get(titre__contains=titre_film)
+    return film_proche
+    
 
+def verif_realisateur_exist(nom_real):
+    real_proche = Realisateur.objects.get(nom__contains=nom_real)
+    return real_proche
