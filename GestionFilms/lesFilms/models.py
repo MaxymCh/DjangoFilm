@@ -28,7 +28,6 @@ class Film(models.Model):
 class Acteur(models.Model):
     nom = models.CharField(max_length=250)
     prenom = models.CharField(max_length=250)
-    role = models.CharField(max_length=250)
     film = models.ManyToManyField(Film)
     def __str__(self):
         return f"{self.prenom} {self.nom}"
