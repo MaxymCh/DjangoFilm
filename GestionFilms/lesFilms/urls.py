@@ -33,4 +33,14 @@ urlpatterns = [
         views.RealisateurDeleteView.as_view(),
         name="realisateur_delete",
     ),
+
+    # Login
+
+    path(
+        "connexion/",
+        views.login_user,
+        name="connexion",
+    ),
+        path("user/create", views.UserCreate.as_view(), name="user_create"),
+
 ]

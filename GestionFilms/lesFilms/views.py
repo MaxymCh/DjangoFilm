@@ -2,13 +2,15 @@
 
 # Create your views here.
 
-from lesFilms.forms import FilmForm, RealisateurForm
-from lesFilms.models import Film, Realisateur
+from lesFilms.forms import FilmForm, RealisateurForm, LoginUserForm
+from lesFilms.models import Film, Realisateur, User
 
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+
+from django.contrib.auth import authenticate, login, logout
 
 
 # Film
@@ -153,3 +155,35 @@ class RealisateurListView(ListView):
     context_object_name = (
         "realisateurs"  # Nom de la variable à utiliser dans le template
     )
+
+# Login
+
+def login_user(request):
+    print(request.method)
+    if request.method == "POST":
+        template_name = "film_list"
+        pseudo = request.POST["pseudo"]
+        password = request.POST["password"]
+        user = authenticate(request, username=pseudo, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse_lazy(template_name))
+        else: # A FAIRE REMPLACER
+            return render(request, 'lesFilms/login/login.html', {'form': LoginUserForm(request.POST)})
+    return render(request, 'lesFilms/login/login.html')
+
+    
+def logout_user(request):
+    template_name = 'film_list'
+    logout(request)
+    return HttpResponseRedirect(reverse_lazy(template_name))
+
+class UserCreate(CreateView):
+    model = User
+    fields = "__all__"
+    template_name = "lesFilms/login/create_user.html"
+    success_url = reverse_lazy("connexion")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

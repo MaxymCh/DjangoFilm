@@ -1,0 +1,25 @@
+{% extends "lesFilms/base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<form method="post" class="post-form">
+    {% csrf_token %}
+    <div class="container">
+      <br />
+      <div class="form-group row">
+        <label class="col-sm-1 col-form-label"></label>
+        <div class="col-sm-4">
+          <h3>{{ action_description }} {{ class_name }}</h3>
+        </div>
+      </div>
+      {{ form.as_p }}
+  
+      <div class="form-group row">
+        <label class="col-sm-1 col-form-label"></label>
+        <div class="col-sm-4">
+          <button type="submit" class="btn btn-success">Valider</button>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+

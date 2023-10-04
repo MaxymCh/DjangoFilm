@@ -1,0 +1,12 @@
+{% extends "lesFilms/base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<form method="POST"  role="form" action="/connexion/">
+  {% csrf_token %}
+  <input type="text" name="pseudo" placeholder="Utilisateur">
+  <input type="password" name="password" placeholder="Mot de passe">
+  <input type="submit" value="login" />
+  <a href="/user/create">Créer un compte</a>
+  </form>
+  
+{% endblock %}
