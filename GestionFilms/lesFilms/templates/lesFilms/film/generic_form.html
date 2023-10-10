@@ -11,12 +11,12 @@ class_name }}{% endblock %} {% block content %}
       </div>
     </div>
     {{ form.as_p }}
-    <div id="realisateurForm" style="display: none">
-      <h3>Création d'un réalisateur</h3>
-        {{ realisateur_form.as_p }}
-        <button type="button" id="realisateurFormSubmit">Valider</button>
-    </div>
-
+    <a href="#" data-bs-toggle="modal"
+          data-bs-target="#createActeurModal" class="open-createModal">Crée Acteur
+    </a>
+    <a href="#" data-bs-toggle="modal"
+    data-bs-target="#createRealisateurModal" class="open-createModal">Crée Realisateur
+    </a>
 
     <div class="form-group row">
       <label class="col-sm-1 col-form-label"></label>
@@ -26,38 +26,102 @@ class_name }}{% endblock %} {% block content %}
     </div>
   </div>
 </form>
+
+<div
+  class="modal fade"
+  id="createRealisateurModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Création de Realisteur
+        </h5>
+        <button type="button"  class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="input-realisateur-prenom">Prenom</label>
+          <input type="text" class="form-control" id="input-realisateur-prenom">
+        </div>
+        <div class="form-group">
+          <label for="input-realisateur-nom">Nom</label>
+          <input type="text" class="form-control" id="input-realisateur-nom">
+        </div>
+      </div>
+      <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">Annuler
+          </button>
+          <button type="button" class="btn btn-success" id="btn-create-realisateur">Crée</button>
+      </div>
+    </div>
+  </div>
+</div>  
+
+<div
+  class="modal fade"
+  id="createActeurModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">
+        Création d'acteur
+      </h5>
+      <button type="button"  class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="input-realisateur-prenom">Prenom</label>
+        <input type="text" class="form-control" id="input-acteur-prenom">
+      </div>
+      <div class="form-group">
+        <label for="input-realisateur-nom">Nom</label>
+        <input type="text" class="form-control" id="input-acteur-nom">
+      </div>
+    </div>
+    <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">Annuler
+        </button>
+        <button type="button" class="btn btn-success" id="btn-create-acteur">Crée</button>
+    </div>
+  </div>
+</div>
+
+
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const realisateurSelect = document.querySelector(
-      'select[name="realisateur"]'
+
+    const modalCreateRealisateurSubmit = document.getElementById(
+      "btn-create-realisateur"
     );
-    const realisateurFormDiv = document.getElementById("realisateurForm");
-    const realisateurFormSubmitBtn = document.getElementById(
-      "realisateurFormSubmit"
-    );
-    const nomInput = document.getElementById("id_nom");
-    const prenomInput = document.getElementById("id_prenom");
-
-    realisateurSelect.addEventListener("change", function () {
-      if (this.value == "create") {
-        realisateurFormDiv.style.display = "block";
-        nomInput.required = true;
-        prenomInput.required = true;
-      } else {
-        realisateurFormDiv.style.display = "none";
-        nomInput.required = false;
-        prenomInput.required = false;
-      }
-    });
-
-    realisateurSelect.dispatchEvent(new Event("change"));
-
-    realisateurFormSubmitBtn.addEventListener("click", function (e) {
+    modalCreateRealisateurSubmit.addEventListener("click", function (e) {
       e.preventDefault();
       const formData = new FormData();
-      if(nomInput.checkValidity() && prenomInput.checkValidity())
-      formData.append("nom", document.getElementById("id_nom").value);
-      formData.append("prenom", document.getElementById("id_prenom").value);
+      const realisateurInputNom = document.getElementById("input-realisateur-nom");
+      const realisateurInputPrenom = document.getElementById("input-realisateur-prenom");
+      if(realisateurInputNom.checkValidity() && realisateurInputPrenom.checkValidity())
+      formData.append("nom", realisateurInputNom.value);
+      formData.append("prenom", realisateurInputPrenom.value);
       fetch("{% url 'create_realisateur_in_film' %}", {
         method: "POST",
         headers: {
@@ -68,8 +132,41 @@ class_name }}{% endblock %} {% block content %}
         .then((response) => response.json())
         .then((data) => {
           const newOption = new Option(data.name, data.id, true, true);
-          realisateurSelect.append(newOption);
-          realisateurFormDiv.style.display = "none";
+          const acteursSelect = document.querySelector('select[name="realisateur"]');
+          acteursSelect.append(newOption);
+          realisateurInputNom.value ="";
+          realisateurInputPrenom.value ="";
+          $('#createRealisateurModal').modal('hide');
+        });
+    });
+
+
+    const modalCreateActeurSubmit = document.getElementById(
+      "btn-create-acteur"
+    );
+    modalCreateActeurSubmit.addEventListener("click", function (e) {
+      e.preventDefault();
+      const formData = new FormData();
+      const acteurInputNom = document.getElementById("input-acteur-nom");
+      const acteurInputPrenom = document.getElementById("input-acteur-prenom");
+      if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
+      formData.append("nom", acteurInputNom.value);
+      formData.append("prenom", acteurInputPrenom.value);
+      fetch("{% url 'create_acteur_in_film' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const newOption = new Option(data.name, data.id, true, true);
+          const acteursSelect = document.querySelector('select[name="acteurs"]');
+          acteursSelect.append(newOption);
+          acteurInputNom.value ="";
+          acteurInputPrenom.value ="";
+          $('#createActeurModal').modal('hide');
         });
     });
   });

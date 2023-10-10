@@ -32,23 +32,9 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        realisateur_form = RealisateurForm(self.request.POST)
-        if (
-            int(self.request.POST["realisateur"]) == 0
-        ):  # Vérifiez si vous avez choisi de créer un nouveau réalisateur
-            if realisateur_form.is_valid():
-                realisateur = realisateur_form.save()
-                film = form.save(commit=False)
-                film.realisateur = realisateur
-                film.save()
-                self.object = film  # Assurez-vous que self.object est défini
-                return HttpResponseRedirect(self.get_success_url())
-            else:
-                return self.render_to_response(self.get_context_data(form=form))
-        else:
-            film = form.save()
-            self.object = film  # Assurez-vous que self.object est défini
-            return HttpResponseRedirect(self.get_success_url())
+        film = form.save()
+        self.object = film  # Assurez-vous que self.object est défini
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class FilmUpdate(UpdateView):
@@ -108,6 +94,14 @@ def create_realisateur_in_film(request):
         else:
             return JsonResponse({"error": "Invalid form data"}, status=400)
 
+def create_acteur_in_film(request):
+    if request.method == "POST":
+        form = ActeurForm(request.POST)
+        if form.is_valid():
+            acteur = form.save()
+            return JsonResponse({"id": acteur.id, "name": str(acteur)})
+        else:
+            return JsonResponse({"error": "Invalid form data"}, status=400)
 
 # Réalisateur
 

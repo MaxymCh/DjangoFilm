@@ -32,13 +32,38 @@
     }
   },
   {
+    "model": "lesFilms.acteur",
+    "pk": 1,
+    "fields": { 
+      "nom": "DiCaprio",
+      "prenom": "Leonardo"
+    }
+  },
+  {
+    "model": "lesFilms.acteur",
+    "pk": 2,
+    "fields": {
+      "nom": "Pitt",
+      "prenom": "Brad"
+    }
+  },
+  {
+    "model": "lesFilms.acteur",
+    "pk": 3,
+    "fields": {
+      "nom": "Depp",
+      "prenom": "Johnny"
+    }
+  },
+  {
     "model": "lesFilms.film",
     "pk": 1,
     "fields": {
       "titre": "Inception",
       "description": "Un voleur professionnel entre dans les rêves des gens pour leur voler des idées.",
       "realisateur": 1,
-      "date_creation": "2010-10-03"
+      "date_creation": "2010-10-03",
+      "acteurs": [1]
     }
   },
   {
@@ -48,7 +73,9 @@
       "titre": "Pulp Fiction",
       "description": "Les vies de plusieurs criminels de Los Angeles s'entrecroisent de manière imprévisible.",
       "realisateur": 2,
-      "date_creation": "1994-10-26"
+      "date_creation": "1994-10-26",
+      "acteurs": [1,2]
+
     }
   },
   {
@@ -58,7 +85,9 @@
       "titre": "La La Land",
       "description": "Un musicien et une actrice tombent amoureux tout en essayant de réaliser leurs rêves à Los Angeles.",
       "realisateur": 3,
-      "date_creation": "2017-01-25"
+      "date_creation": "2017-01-25",
+      "acteurs": [2,3]
+
     }
   },
   {
@@ -68,7 +97,8 @@
       "titre": "Parasite",
       "description": "Une famille pauvre infiltre la vie d'une famille riche, avec des conséquences imprévues.",
       "realisateur": 4,
-      "date_creation": "2019-06-05"
+      "date_creation": "2019-06-05",
+      "acteurs": [3]
     }
   },
   {
@@ -78,7 +108,8 @@
       "titre": "Interstellar",
       "description": "Un groupe d'explorateurs voyage à travers un trou de ver près de Saturne pour trouver un nouvel habitat pour l'humanité.",
       "realisateur": 1,
-      "date_creation": "2014-11-05"
+      "date_creation": "2014-11-05",
+      "acteurs": [1]
     }
   }
 ]
