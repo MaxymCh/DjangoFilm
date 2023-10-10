@@ -10,23 +10,17 @@ class FilmForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.initial["date_creation"] = self.instance.formatted_date()
-        self.fields["realisateur"].queryset = (
-            Realisateur.objects.all() | Realisateur.objects.none()
-        )
-        self.fields["realisateur"].choices = list(
-            self.fields["realisateur"].choices
-        ) + [("create", "Créer un réalisateur")]
 
     class Meta:
         model = Film
         fields = "__all__"
 
-    def clean_realisateur(self):
-        realisateur = self.cleaned_data.get("realisateur")
-        if realisateur and str(realisateur.id) == "0":
-            return None  # Acceptez la valeur "0" comme valide
-        return realisateur
-
+    def clean_titre(self):
+        titre = self.cleaned_data['titre']
+        titres_similaires = Film.objects.filter(titre__icontains=titre)
+        if titres_similaires.exists():
+            self.titres_similaires = [film.titre for film in titres_similaires]
+        return titre
 
 class RealisateurForm(forms.ModelForm):
     class Meta:

@@ -34,8 +34,12 @@ class Film(models.Model):
         return self.date_creation.strftime("%Y-%m-%d")
 
 def verif_film_exist(titre_film):
-    film_proche = Film.objects.get(titre__contains=titre_film)
-    return film_proche
+    print(titre_film)
+    films = Film.objects.all()
+    for film in films:
+        if film.titre == titre_film:
+            return True
+    return False
     
 
 def verif_realisateur_exist(nom_real):

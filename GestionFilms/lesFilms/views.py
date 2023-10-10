@@ -15,6 +15,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 
 
 class FilmCreate(CreateView):
+
     model = Film
     form_class = FilmForm
     template_name = "lesFilms/film/generic_form.html"
@@ -32,30 +33,15 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        realisateur_form = RealisateurForm(self.request.POST)
-        if (
-            int(self.request.POST["realisateur"]) == 0
-        ):  # Vérifiez si vous avez choisi de créer un nouveau réalisateur
-            if realisateur_form.is_valid():
-                realisateur = realisateur_form.save()
-                film = form.save(commit=False)
-                film_exist = verif_film_exist(film.titre)
-                print("azeuibfgzyueaigbzeiguzbeazie")
-                print(film_exist)
-                if film_exist is not None:
-                    # return une error
-                    print("erreur film existant")
-                else :
-                    film.realisateur = realisateur
-                    film.save()
-                    self.object = film  # Assurez-vous que self.object est défini
-                    return HttpResponseRedirect(self.get_success_url())
+        show_modal = False
+        if form.is_valid():
+            if hasattr(form, 'titres_similaires'):
+                show_modal = True
             else:
-                return self.render_to_response(self.get_context_data(form=form))
-        else:
-            film = form.save()
-            self.object = film  # Assurez-vous que self.object est défini
-            return HttpResponseRedirect(self.get_success_url())
+                # Enregistrez le film et redirigez vers une autre page
+                form.save()
+                return HttpResponseRedirect(reverse_lazy("film_list"))
+        return render(self.request, self.template_name, {'form': form, 'show_modal': show_modal})
 
 
 class FilmUpdate(UpdateView):
