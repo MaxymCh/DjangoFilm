@@ -32,9 +32,16 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        film = form.save()
-        self.object = film  # Assurez-vous que self.object est défini
-        return HttpResponseRedirect(self.get_success_url())
+        show_modal = False
+        if form.is_valid():
+            if hasattr(form, 'titres_similaires'):
+                show_modal = True
+            else:
+                # Enregistrez le film et redirigez vers une autre page
+                form.save()
+                return HttpResponseRedirect(reverse_lazy("film_list"))
+        return render(self.request, self.template_name, {'form': form, 'show_modal': show_modal})
+                  
 
 
 class FilmUpdate(UpdateView):
