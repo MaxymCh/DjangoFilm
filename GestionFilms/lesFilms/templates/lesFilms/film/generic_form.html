@@ -1,8 +1,13 @@
-{% extends "lesFilms/base.html" %} {% block title %}{{ action_name }} {{
-class_name }}{% endblock %} {% block content %}
+{% extends "lesFilms/base.html" %}
+{% block title %}{{ action_name }} {{class_name }}{% endblock %}
+
+{% load static %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />{% endblock %}
+
+{% block content %}
 <form method="post" class="post-form">
   {% csrf_token %}
-  <div class="container">
+  <div class="container container-form">
     <br />
     <div class="form-group row">
       <label class="col-sm-1 col-form-label"></label>
@@ -11,6 +16,11 @@ class_name }}{% endblock %} {% block content %}
       </div>
     </div>
     {{ form.as_p }}
+    <div id="creation-acteur">
+
+    </div>
+    <button type="button" class="btn btn-success" id="btn-add-acteur">Crée Acteur</button>
+
     <a href="#" data-bs-toggle="modal"
           data-bs-target="#createActeurModal" class="open-createModal">Crée Acteur
     </a>
@@ -87,11 +97,11 @@ class_name }}{% endblock %} {% block content %}
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label for="input-realisateur-prenom">Prenom</label>
+        <label for="input-acteur-prenom">Prenom</label>
         <input type="text" class="form-control" id="input-acteur-prenom">
       </div>
       <div class="form-group">
-        <label for="input-realisateur-nom">Nom</label>
+        <label for="input-acteur-nom">Nom</label>
         <input type="text" class="form-control" id="input-acteur-nom">
       </div>
     </div>
@@ -110,6 +120,45 @@ class_name }}{% endblock %} {% block content %}
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    let numberActeurAdd = 0;
+    const buttonAddActeur = document.getElementById(
+      "btn-add-acteur"
+    );
+    buttonAddActeur.addEventListener("click", function (e) {
+      divCreateActeur = document.getElementById("creation-acteur");
+      let divFormGroup = document.createElement("div");
+      divFormGroup.className = "form-group";
+
+      let label = document.createElement("label");
+      label.setAttribute("for", "input-prenom"+numberActeurAdd);
+      label.innerText = "Acteur"+numberActeurAdd+" Prenom";
+
+      let input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.className = "form-control";
+      input.id = "input-prenom"+numberActeurAdd;
+
+      divFormGroup.appendChild(label);
+      divFormGroup.appendChild(input);
+
+      label = document.createElement("label");
+      label.setAttribute("for", "input-nom"+numberActeurAdd);
+      label.innerText = "Acteur"+numberActeurAdd+" Nom";
+
+      input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.className = "form-control";
+      input.id = "input-nom"+numberActeurAdd;
+
+
+
+      divFormGroup.appendChild(label);
+      divFormGroup.appendChild(input);
+
+      // Ajoutez l'élément div principal à votre élément parent, par exemple le body
+      divCreateActeur.appendChild(divFormGroup);
+      numberActeurAdd++;
+    });
 
     const modalCreateRealisateurSubmit = document.getElementById(
       "btn-create-realisateur"
@@ -140,12 +189,14 @@ class_name }}{% endblock %} {% block content %}
         });
     });
 
-
+    
+   
     const modalCreateActeurSubmit = document.getElementById(
       "btn-create-acteur"
     );
     modalCreateActeurSubmit.addEventListener("click", function (e) {
       e.preventDefault();
+
       const formData = new FormData();
       const acteurInputNom = document.getElementById("input-acteur-nom");
       const acteurInputPrenom = document.getElementById("input-acteur-prenom");

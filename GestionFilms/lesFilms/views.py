@@ -32,6 +32,8 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):
+        print("ici")
+        print(form)
         film = form.save()
         self.object = film  # Assurez-vous que self.object est défini
         return HttpResponseRedirect(self.get_success_url())
