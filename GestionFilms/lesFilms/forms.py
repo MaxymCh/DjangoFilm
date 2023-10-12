@@ -32,12 +32,13 @@ class FilmForm(forms.ModelForm):
         fields = ['titre', 'description', 'date_creation', 'realisateur']
     
     def clean_titre(self):
-        titre = self.cleaned_data['titre']
+        titre_original = self.cleaned_data['titre']
+        titre = self.cleaned_data['titre'].lower()
         close_matches = []
         titres_similaires = Film.objects.exclude(pk=self.instance.pk if self.instance else None)
         max_length_difference = 2
         if titres_similaires.exists():
-            self.titres_similaires = [film.titre for film in titres_similaires]
+            self.titres_similaires = [film.titre.lower() for film in titres_similaires]
             for titre_proche in self.titres_similaires:
                 length_difference = abs(len(titre) - len(titre_proche))
                 if titre in titre_proche or titre_proche in titre:
@@ -50,9 +51,9 @@ class FilmForm(forms.ModelForm):
                 elif levenshtein_distance(titre, titre_proche) <= 1:
                     close_matches.append(titre_proche)
         if close_matches != []:
-            formatted_matches = str(close_matches)[1:-1]
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
             raise forms.ValidationError(f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
-        return titre
+        return titre_original
 
 
 class RealisateurForm(forms.ModelForm):
