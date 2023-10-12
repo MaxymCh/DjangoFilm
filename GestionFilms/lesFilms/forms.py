@@ -48,7 +48,6 @@ class FilmForm(forms.ModelForm):
                         if length_difference <= max_length_difference:
                             close_matches.append(titre_proche)
                     elif length_difference <= max_length_difference:
-                        print(c)
                         close_matches.append(titre_proche)
                 elif levenshtein_distance(titre, titre_proche) <= 1:
                     close_matches.append(titre_proche)
