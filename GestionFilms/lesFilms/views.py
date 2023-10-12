@@ -39,7 +39,6 @@ class FilmCreate(CreateView):
                 prenom = value
                 nom = self.request.POST.get(f"acteur_nom_{numero_acteur}")
                 acteurs_data.append({"prenom": prenom, "nom": nom})
-
         film = form.save()
         for acteur in acteurs_data:
             acteur_prenom = acteur["prenom"]
