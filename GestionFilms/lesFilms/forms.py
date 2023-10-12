@@ -51,7 +51,8 @@ class FilmForm(forms.ModelForm):
                 elif levenshtein_distance(titre, titre_proche) <= 1:
                     close_matches.append(titre_proche)
         if close_matches != []:
-            raise forms.ValidationError(f"Attention, d'autres films portent approximativement le même titre : {str(close_matches)}")
+            formatted_matches = str(close_matches)[1:-1]
+            raise forms.ValidationError(f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
         return titre
 
 

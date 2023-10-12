@@ -1,0 +1,12 @@
+.errorlist {
+    background-color: #ffebee;   
+    border: 1px solid #ef9a9a; 
+    border-radius: 4px;        
+    padding: 10px 15px;       
+    margin-bottom: 10px;        
+    font-weight: bold;          
+    display: flex;             
+    align-items: center;        
+    gap: 10px;   
+    list-style: none;             
+}
