@@ -32,12 +32,32 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        print("ici")
-        print(form)
-        film = form.save()
-        self.object = film  # Assurez-vous que self.object est défini
-        return HttpResponseRedirect(self.get_success_url())
+            acteurs_data = []
+            for key, value in self.request.POST.items():
+                if "acteur_prenom_" in key:
+                    numero_acteur = key.split("_")[-1]
+                    prenom = value
+                    nom = self.request.POST.get(f"acteur_nom_{numero_acteur}")
+                    acteurs_data.append({"prenom": prenom, "nom": nom})
 
+            film = form.save()
+            for acteur in acteurs_data:
+                acteur_prenom = acteur["prenom"]
+                acteur_nom = acteur["nom"]
+                print(acteur)
+                try:
+                    # Recherchez l'acteur dans la base de données
+                    acteur = Acteur.objects.get(nom=acteur_nom, prenom=acteur_prenom)
+                except Acteur.DoesNotExist:
+                    acteur = Acteur(nom=acteur_nom, prenom=acteur_prenom)
+                    acteur.save()
+                film.acteurs.add(acteur)
+
+            
+
+            # Ajoutez cet acteur au film
+            self.object = film  # Assurez-vous que self.object est défini
+            return HttpResponseRedirect(self.get_success_url())
 
 class FilmUpdate(UpdateView):
     model = Film
@@ -93,15 +113,6 @@ def create_realisateur_in_film(request):
         if form.is_valid():
             realisateur = form.save()
             return JsonResponse({"id": realisateur.id, "name": str(realisateur)})
-        else:
-            return JsonResponse({"error": "Invalid form data"}, status=400)
-
-def create_acteur_in_film(request):
-    if request.method == "POST":
-        form = ActeurForm(request.POST)
-        if form.is_valid():
-            acteur = form.save()
-            return JsonResponse({"id": acteur.id, "name": str(acteur)})
         else:
             return JsonResponse({"error": "Invalid form data"}, status=400)
 

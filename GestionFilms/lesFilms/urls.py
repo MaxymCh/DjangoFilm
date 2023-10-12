@@ -20,11 +20,6 @@ urlpatterns = [
         views.create_realisateur_in_film,
         name="create_realisateur_in_film",
     ),
-    path(
-        "create_acteur_in_film/",
-        views.create_acteur_in_film,
-        name="create_acteur_in_film",
-    ),
     
     # Réalisateur
     path("realisateur/", views.RealisateurListView.as_view(), name="realisateur_list"),
