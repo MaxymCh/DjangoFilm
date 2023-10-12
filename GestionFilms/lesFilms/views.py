@@ -37,7 +37,7 @@ class FilmCreate(CreateView):
             # Enregistrez le film et redirigez vers une autre page
             form.save()
             return HttpResponseRedirect(reverse_lazy("film_list"))
-        return render(self.request, self.template_name, {'form': form, 'show_modal': show_modal})
+        return render(self.request, self.template_name, {'form': form})
                   
 
 
