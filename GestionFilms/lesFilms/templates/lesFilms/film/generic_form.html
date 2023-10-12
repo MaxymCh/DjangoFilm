@@ -1,8 +1,13 @@
-{% extends "lesFilms/base.html" %} {% block title %}{{ action_name }} {{
-class_name }}{% endblock %} {% block content %}
+{% extends "lesFilms/base.html" %}
+{% block title %}{{ action_name }} {{class_name }}{% endblock %}
+
+{% load static %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />{% endblock %}
+
+{% block content %}
 <form method="post" class="post-form">
   {% csrf_token %}
-  <div class="container">
+  <div class="container container-form">
     <br />
     <div class="form-group row">
       <label class="col-sm-1 col-form-label"></label>
@@ -11,9 +16,10 @@ class_name }}{% endblock %} {% block content %}
       </div>
     </div>
     {{ form.as_p }}
-    <a href="#" data-bs-toggle="modal"
-          data-bs-target="#createActeurModal" class="open-createModal">Crée Acteur
-    </a>
+    <div id="creation-acteur">
+
+    </div>
+    <button type="button" class="btn btn-success" id="btn-add-acteur">Ajouter Acteur</button>
     <a href="#" data-bs-toggle="modal"
     data-bs-target="#createRealisateurModal" class="open-createModal">Crée Realisateur
     </a>
@@ -67,49 +73,24 @@ class_name }}{% endblock %} {% block content %}
   </div>
 </div>  
 
-<div
-  class="modal fade"
-  id="createActeurModal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
->
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel">
-        Création d'acteur
-      </h5>
-      <button type="button"  class="btn-close"
-        data-bs-dismiss="modal"
-        aria-label="Close"
-      ></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label for="input-realisateur-prenom">Prenom</label>
-        <input type="text" class="form-control" id="input-acteur-prenom">
-      </div>
-      <div class="form-group">
-        <label for="input-realisateur-nom">Nom</label>
-        <input type="text" class="form-control" id="input-acteur-nom">
-      </div>
-    </div>
-    <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          data-bs-dismiss="modal">Annuler
-        </button>
-        <button type="button" class="btn btn-success" id="btn-create-acteur">Crée</button>
-    </div>
-  </div>
-</div>
-
-
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    let numberActeurAdd = 0;
+    const buttonAddActeur = document.getElementById(
+      "btn-add-acteur"
+    );
+    buttonAddActeur.addEventListener("click", function (e) {
+      divCreateActeur = document.getElementById("creation-acteur");
+      let divFormGroup = document.createElement("div");
+      divFormGroup.className = "form-group";
+
+      createInputPerso("prenom", divFormGroup, numberActeurAdd)
+      createInputPerso("nom", divFormGroup, numberActeurAdd)
+
+      // Ajoutez l'élément div principal à votre élément parent, par exemple le body
+      divCreateActeur.appendChild(divFormGroup);
+      numberActeurAdd++;
+    });
 
     const modalCreateRealisateurSubmit = document.getElementById(
       "btn-create-realisateur"
@@ -140,37 +121,27 @@ class_name }}{% endblock %} {% block content %}
         });
     });
 
+    
 
-    const modalCreateActeurSubmit = document.getElementById(
-      "btn-create-acteur"
-    );
-    modalCreateActeurSubmit.addEventListener("click", function (e) {
-      e.preventDefault();
-      const formData = new FormData();
-      const acteurInputNom = document.getElementById("input-acteur-nom");
-      const acteurInputPrenom = document.getElementById("input-acteur-prenom");
-      if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
-      formData.append("nom", acteurInputNom.value);
-      formData.append("prenom", acteurInputPrenom.value);
-      fetch("{% url 'create_acteur_in_film' %}", {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": getCookie("csrftoken"),
-        },
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const newOption = new Option(data.name, data.id, true, true);
-          const acteursSelect = document.querySelector('select[name="acteurs"]');
-          acteursSelect.append(newOption);
-          acteurInputNom.value ="";
-          acteurInputPrenom.value ="";
-          $('#createActeurModal').modal('hide');
-        });
-    });
   });
 
+  function createInputPerso(inputName, divFormGroup, numberID){
+
+      let label = document.createElement("label");
+      label.setAttribute("for", "acteur_"+inputName+ "_" + numberID);
+      label.innerText = "Acteur " + numberID + " " + inputName;
+
+      let input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.className = "form-control";
+      input.id = "acteur_"+inputName+"_" + numberID;
+      input.name = "acteur_"+inputName+"_" + numberID;
+
+
+      divFormGroup.appendChild(label);
+      divFormGroup.appendChild(input);
+  }
+  
   function getCookie(name) {
     let value = "; " + document.cookie;
     let parts = value.split("; " + name + "=");

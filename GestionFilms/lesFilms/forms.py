@@ -1,7 +1,6 @@
 from django import forms
 from lesFilms.models import Film, Realisateur, Acteur
 from django.forms import inlineformset_factory
-import numpy as np
 
 def levenshtein_distance(s1, s2):
     if len(s1) > len(s2):
@@ -21,6 +20,9 @@ def levenshtein_distance(s1, s2):
 
 class FilmForm(forms.ModelForm):
     date_creation = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
+    """acteur_nom = forms.CharField(max_length=100, required=False, label="Nom de l'acteur")
+    acteur_prenom = forms.CharField(max_length=100, required=False, label="Prénom de l'acteur")"""
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,7 +31,7 @@ class FilmForm(forms.ModelForm):
     
     class Meta:
         model = Film
-        fields = "__all__"
+        fields = ['titre', 'description', 'date_creation', 'realisateur']
     
     def clean_titre(self):
         titre = self.cleaned_data['titre']

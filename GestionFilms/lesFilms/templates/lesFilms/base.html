@@ -13,12 +13,17 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    {% block style %}
+    {% endblock %}
+
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand" href="{% url 'film_list' %}">🎬 CinéApp</a>
         <a class="navbar-brand" href="{% url 'realisateur_list' %}">🎬 Réalisateur</a>
+        <a class="navbar-brand" href="{% url 'acteur_list' %}">🎬 Acteur</a>
+
 
         <button
           class="navbar-toggler"
