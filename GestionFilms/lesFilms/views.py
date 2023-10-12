@@ -32,29 +32,25 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):   
-        acteurs_data = []
-        for key, value in self.request.POST.items():
-            if "acteur_prenom_" in key:
-                numero_acteur = key.split("_")[-1]
-                prenom = value
-                nom = self.request.POST.get(f"acteur_nom_{numero_acteur}")
-                acteurs_data.append({"prenom": prenom, "nom": nom})
-        film = form.save()
-        for acteur in acteurs_data:
-            acteur_prenom = acteur["prenom"]
-            acteur_nom = acteur["nom"]
-            print(acteur)
-            try:
-                # Recherchez l'acteur dans la base de données
-                acteur = Acteur.objects.get(nom=acteur_nom, prenom=acteur_prenom)
-            except Acteur.DoesNotExist:
-                acteur = Acteur(nom=acteur_nom, prenom=acteur_prenom)
-                acteur.save()
+        realisateur_nom = self.request.POST.get('realisateur_nom')
+        realisateur_prenom = self.request.POST.get('realisateur_prenom')
+        film = form.save(commit=False)
+
+        try:
+            realisateur = Realisateur.objects.get(nom=realisateur_nom, prenom=realisateur_prenom)
+        except Realisateur.DoesNotExist:
+            # Créez un nouvel acteur s'il n'existe pas (ou gérez l'erreur comme vous le souhaitez)
+            realisateur = Realisateur(nom=realisateur_nom, prenom=realisateur_prenom)
+            realisateur.save()
+
+        film.realisateur = realisateur
+        film.save()
+
+        acteurs_ids = self.request.POST.getlist('acteurs')
+        for acteur_id in acteurs_ids:
+            acteur = Acteur.objects.get(pk=acteur_id)
             film.acteurs.add(acteur)
 
-        
-
-        # Ajoutez cet acteur au film
         self.object = film  # Assurez-vous que self.object est défini
         return HttpResponseRedirect(self.get_success_url())
 
@@ -70,26 +66,14 @@ class FilmUpdate(UpdateView):
         context["class_name"] = self.model.__name__
         context["action_name"] = "Modifier le"
         context["realisateur_form"] = RealisateurForm(self.request.POST or None)
+
+
         return context
 
     def form_valid(self, form):
-        realisateur_form = RealisateurForm(self.request.POST)
-        if (
-            int(self.request.POST["realisateur"]) == 0
-        ):  # Vérifiez si vous avez choisi de créer un nouveau réalisateur
-            if realisateur_form.is_valid():
-                realisateur = realisateur_form.save()
-                film = form.save(commit=False)
-                film.realisateur = realisateur
-                film.save()
-                self.object = film  # Assurez-vous que self.object est défini
-                return HttpResponseRedirect(self.get_success_url())
-            else:
-                return self.render_to_response(self.get_context_data(form=form))
-        else:
-            film = form.save()
-            self.object = film  # Assurez-vous que self.object est défini
-            return HttpResponseRedirect(self.get_success_url())
+        film = form.save()
+        self.object = film  # Assurez-vous que self.object est défini
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class FilmDeleteView(DeleteView):
@@ -106,12 +90,12 @@ class FilmListView(ListView):
     context_object_name = "films"  # Nom de la variable à utiliser dans le template
 
 
-def create_realisateur_in_film(request):
+def create_acteur_in_film(request):
     if request.method == "POST":
-        form = RealisateurForm(request.POST)
+        form = ActeurForm(request.POST)
         if form.is_valid():
-            realisateur = form.save()
-            return JsonResponse({"id": realisateur.id, "name": str(realisateur)})
+            acteur = form.save()
+            return JsonResponse({"id": acteur.id, "name": str(acteur)})
         else:
             return JsonResponse({"error": "Invalid form data"}, status=400)
 

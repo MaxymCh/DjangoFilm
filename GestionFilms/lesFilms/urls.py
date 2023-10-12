@@ -16,9 +16,9 @@ urlpatterns = [
         name="film_delete",
     ),
     path(
-        "create_realisateur_in_film/",
-        views.create_realisateur_in_film,
-        name="create_realisateur_in_film",
+        "create_acteur_in_film/",
+        views.create_acteur_in_film,
+        name="create_acteur_in_film",
     ),
     
     # Réalisateur

@@ -20,18 +20,19 @@ def levenshtein_distance(s1, s2):
 
 class FilmForm(forms.ModelForm):
     date_creation = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    """acteur_nom = forms.CharField(max_length=100, required=False, label="Nom de l'acteur")
-    acteur_prenom = forms.CharField(max_length=100, required=False, label="Prénom de l'acteur")"""
-
+    realisateur_nom = forms.CharField(max_length=100, required=False, label="Nom du réalisateur")
+    realisateur_prenom = forms.CharField(max_length=100, required=False, label="Prénom du réalisateur")
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(FilmForm, self).__init__(*args, **kwargs)
+        
         if self.instance and self.instance.pk:
             self.initial["date_creation"] = self.instance.formatted_date()
-    
+            self.initial["realisateur_nom"] = self.instance.realisateur.nom
+            self.initial["realisateur_prenom"] = self.instance.realisateur.prenom        
     class Meta:
         model = Film
-        fields = ['titre', 'description', 'date_creation', 'realisateur']
+        fields = ['titre', 'description', 'date_creation', 'realisateur_nom', 'realisateur_prenom', 'acteurs']
     
     def clean_titre(self):
         titre = self.cleaned_data['titre']
