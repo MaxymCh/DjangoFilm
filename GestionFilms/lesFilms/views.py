@@ -163,6 +163,16 @@ class ActeurCreate(CreateView):
         context["action_name"] = "Création"
         context["action_description"] = "Entrez les informations du"
         return context
+    
+    def form_valid(self, form):
+        form = ActeurForm(self.request.POST)
+        if self.request.method == "POST":
+            self.object = Acteur  # Assurez-vous que self.object est défini
+            if form.is_valid():
+                acteur = form.save()
+                return HttpResponseRedirect(self.get_success_url())
+            else:
+                return self.render_to_response(self.get_context_data(form=form))
 
 
 class ActeurUpdate(UpdateView):
