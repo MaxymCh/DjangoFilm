@@ -5,49 +5,52 @@
 {% block style %}<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />{% endblock %}
 
 {% block content %}
-<form method="post" class="post-form">
-  {% csrf_token %}
-  <div class="container container-form">
-    <br />
-    <div class="form-group row">
-      <label class="col-sm-1 col-form-label"></label>
-      <div class="col-sm-4">
-        <h3>{{ action_description }} {{ class_name }}</h3>
-      </div>
-    </div>
-    {{ form.as_p }}
-    <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
-    <div id="Création acteur" hidden>
-      {{ acteur_form }}
-      <div id="acteurs_similaire">
-        <span id="erreurMessage" style="color:red"></span><br><br>
-      </div>
-      <input id="force-insertion" type="checkbox">
-      <label for="force-insertion">Forcer l'insertion</label>
+<div class="container container-form">
 
-      <button type="button" onclick="createActeur()">Crée l'Acteur</button>
-    </div>
-
-    <div class="form-group row">
-      <label class="col-sm-1 col-form-label"></label>
-      <div class="col-sm-4">
-        <button type="submit" class="btn btn-success">Valider</button>
+  <form method="post" class="post-form" id="form-create-film">
+    {% csrf_token %}
+      <br />
+      <div class="form-group row">
+        <label class="col-sm-1 col-form-label"></label>
+        <div class="col-sm-4">
+          <h3>{{ action_description }} {{ class_name }}</h3>
+        </div>
       </div>
+      {{ form.as_p }}
+  </form>
+
+  <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
+  <div id="Création acteur" hidden>
+    {{ acteur_form }}
+    <div id="acteurs_similaire">
+      <span id="erreurMessage" style="color:red"></span><br><br>
+    </div>
+    <input id="force-insertion" type="checkbox">
+    <label for="force-insertion">Forcer l'insertion</label>
+
+    <button type="button" onclick="createActeur()" class="btn btn-primary">Crée l'Acteur</button>
+    <button type="button" onclick="resetCreateActeur()" class="btn btn-danger">Annuler</button>
+
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-1 col-form-label"></label>
+    <div class="col-sm-4">
+      <button type="button" onclick="validateFomulaireCreateFilm()" class="btn btn-success">Valider</button>
     </div>
   </div>
-</form>
-    <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
-    <div id="Création acteur" hidden>
-      {{ acteur_form }}
-      <button type="button" onclick="createActeur()">Crée l'Acteur</button>
-    </div>
+</div>
 
 
 
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-
+    document.getElementById("force-insertion").checked = false
+    $('#id_acteurs').select2({
+        placeholder: "Sélectionnez une option", // texte à afficher par défaut
+        allowClear: true, // permet de supprimer la sélection
+        width: 'resolve' // ajuster la largeur du sélecteur
+    });
   });
   
   function addActeur(){
@@ -56,86 +59,93 @@
   }
 
   function createActeur(){
-    const formData = new FormData();
     const acteurInputNom = document.getElementById("id_nom");
     const acteurInputPrenom = document.getElementById("id_prenom");
-    if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
-    formData.append("nom", acteurInputNom.value);
-    formData.append("prenom", acteurInputPrenom.value);
-    let force = document.getElementById("force-insertion").checked;
-    formData.append("force", force);
+    if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity()){
+      const formData = new FormData();
+      formData.append("nom", acteurInputNom.value);
+      formData.append("prenom", acteurInputPrenom.value);
+      let force = document.getElementById("force-insertion").checked;
+      formData.append("force", force);
 
-    fetch("{% url 'create_acteur_in_film' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": getCookie("csrftoken"),
-      },
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if(data["cree"]){
-          const newOption = new Option(data.name, data.id, true, true);
-          const acteursSelect = document.querySelector('select[name="acteurs"]');
-          acteursSelect.append(newOption);
-          acteurInputNom.value ="";
-          acteurInputPrenom.value ="";
-          const divActeur = document.getElementById("Création acteur");
-          divActeur.hidden = true;
-        }
-        else{
-          document.getElementById("erreurMessage").innerHTML = "Il y a un ou plusieurs acteurs similaire en voici la liste"
-          const divActeursSimilaire = document.getElementById("acteurs_similaire");
-          const acteurs_proches = data["liste_acteurs"];
-          let select;
-          if (!document.getElementById('select-acteurs-similaire')){
-            select = document.createElement('select');
-            select.id = 'select-acteurs-similaire';
-            select.name = 'select-acteurs-similaire';
-            divActeursSimilaire.appendChild(select);
-
+      fetch("{% url 'create_acteur_in_film' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if(data["cree"]){
+            ajouterOptionActeurToSelect(data);
           }
           else{
-            select = document.getElementById('select-acteurs-similaire');
+            afficherActeursSimilaire(data);
           }
-          select.innerHTML = "";
-          for (var i = 0; i < acteurs_proches.length; i++) {
-            option = document.createElement('option');
-            option.id = "option-"+acteurs_proches[i].id;
-            option.value = acteurs_proches[i].id;
-            option.textContent = acteurs_proches[i].prenom +" "+acteurs_proches[i].nom;
-            $(option).attr('nom', acteurs_proches[i].nom);
-            $(option).attr('prenom', acteurs_proches[i].prenom);
-
-            select.appendChild(option);
-          }
-
-        }
-        
-      });
-  }
-
-  function createInputPerso(inputName, divFormGroup, numberID){
-
-      let label = document.createElement("label");
-      label.setAttribute("for", "realisateur"+inputName+ "_" + numberID);
-      label.innerText = "Realisateur " + numberID + " " + inputName;
-
-      let input = document.createElement("input");
-      input.setAttribute("type", "text");
-      input.className = "form-control";
-      input.id = "realisateur_"+inputName+"_" + numberID;
-      input.name = "realisateur_"+inputName+"_" + numberID;
-
-
-      divFormGroup.appendChild(label);
-      divFormGroup.appendChild(input);
+          
+        });
+    }
   }
   
   function getCookie(name) {
     let value = "; " + document.cookie;
     let parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
+  }
+
+  function resetCreateActeur(){
+    document.getElementById("erreurMessage").innerHTML = "";
+    document.getElementById("force-insertion").checked = false
+    const acteurInputNom = document.getElementById("id_nom");
+    const acteurInputPrenom = document.getElementById("id_prenom");
+    acteurInputNom.value ="";
+    acteurInputPrenom.value ="";
+    const divActeur = document.getElementById("Création acteur");
+    divActeur.hidden = true;
+    $("#select-acteurs-similaire").html("");
+    $("#select-acteurs-similaire").hide()
+  }
+
+
+  function validateFomulaireCreateFilm(){
+    const formulaire = document.getElementById("form-create-film");
+    if (formulaire.checkValidity()) {
+      formulaire.submit();
+    }
+  }
+
+  function ajouterOptionActeurToSelect(data){
+    const newOption = new Option(data.name, data.id, true, true);
+    const acteursSelect = document.querySelector('select[name="acteurs"]');
+    acteursSelect.append(newOption);
+    resetCreateActeur();
+  }
+
+  function afficherActeursSimilaire(data){
+    document.getElementById("erreurMessage").innerHTML = "Il y a un ou plusieurs acteurs similaire en voici la liste"
+    const divActeursSimilaire = document.getElementById("acteurs_similaire");
+    const acteurs_proches = data["liste_acteurs"];
+    let select;
+    if (!document.getElementById('select-acteurs-similaire')){
+      select = document.createElement('select');
+      select.id = 'select-acteurs-similaire';
+      select.name = 'select-acteurs-similaire';
+      divActeursSimilaire.appendChild(select);
+
+    }
+    else{
+      select = document.getElementById('select-acteurs-similaire');
+    }
+    $("#select-acteurs-similaire").show()
+
+    select.innerHTML = "";
+    for (var i = 0; i < acteurs_proches.length; i++) {
+      option = document.createElement('option');
+      option.value = acteurs_proches[i];
+      option.textContent = acteurs_proches[i]
+      select.appendChild(option);
+    }
   }
 </script>
 {% endblock %}

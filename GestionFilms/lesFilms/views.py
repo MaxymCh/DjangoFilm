@@ -52,9 +52,6 @@ class FilmCreate(CreateView):
             formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
             form.add_error("titre",f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
             return self.form_invalid(form)
-
-
-
         try:
             realisateur = Realisateur.objects.get(nom=realisateur_nom, prenom=realisateur_prenom)
         except Realisateur.DoesNotExist:
@@ -117,12 +114,23 @@ def create_acteur_in_film(request):
             acteur = form.save()
             return JsonResponse({"id": acteur.id, "name": str(acteur), "cree": True})            
         else:
-            try:
-                acteur = Acteur.objects.filter(nom=request.POST["nom"], prenom=request.POST["prenom"])[:1].get()
-                return JsonResponse({"liste_acteurs": [{'nom': "DiCaprio", "prenom": "Leonardo", 'id':"1"}, {'nom': request.POST["nom"], "prenom": request.POST["prenom"], 'id':acteur.id}], "cree": False})
-            except Acteur.DoesNotExist:
+            nom = request.POST.get('nom').capitalize()
+            prenom = request.POST.get('prenom').capitalize()
+            nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+            close_matches = []
+            # Vérification en BD si similaire acteur
+            acteurs = Acteur.objects.all()
+            if acteurs.exists():
+                acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
+                for real in acteurs_similaires:
+                    if ratio(nom_prenom, real) > 0.8:
+                        close_matches.append(real)
+            if close_matches == []:
                 acteur = form.save()
                 return JsonResponse({"id": acteur.id, "name": str(acteur), "cree": True})
+            else:
+                return JsonResponse({"liste_acteurs": close_matches, "cree": False})
+
 
 
 # Réalisateur
