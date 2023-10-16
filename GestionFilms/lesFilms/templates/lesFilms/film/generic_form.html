@@ -16,12 +16,6 @@
       </div>
     </div>
     {{ form.as_p }}
-    <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
-    <div id="Création acteur" hidden>
-      {{ acteur_form }}
-      <button type="button" onclick="createActeur()">Crée l'Acteur</button>
-    </div>
-
     <div class="form-group row">
       <label class="col-sm-1 col-form-label"></label>
       <div class="col-sm-4">
@@ -30,6 +24,13 @@
     </div>
   </div>
 </form>
+    <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
+    <div id="Création acteur" hidden>
+      {{ acteur_form }}
+      <button type="button" onclick="createActeur()">Crée l'Acteur</button>
+    </div>
+
+
 
 
 <script>

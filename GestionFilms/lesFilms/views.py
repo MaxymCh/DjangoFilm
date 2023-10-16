@@ -10,6 +10,9 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 
+from Levenshtein import ratio
+
+
 
 # Film
 
@@ -34,7 +37,23 @@ class FilmCreate(CreateView):
     def form_valid(self, form):   
         realisateur_nom = self.request.POST.get('realisateur_nom').capitalize()
         realisateur_prenom = self.request.POST.get('realisateur_prenom').capitalize()
-        film = form.save(commit=False)
+        titre_film = self.request.POST.get('titre')
+        close_matches = []
+        # Vérification en BD si similaire titre film
+        titres_similaires = Film.objects.exclude(pk=self.object.pk if self.object else None)
+        if titres_similaires.exists():
+            self.titres_similaires = [film.titre.lower() for film in titres_similaires]
+            for film_titre in self.titres_similaires:
+                if ratio(titre_film, film_titre) > 0.7:
+                    close_matches.append(film_titre)
+        # Si c'est le cas --> erreur
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            form.add_error("titre",f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
+            return self.form_invalid(form)
+
+
+
         try:
             realisateur = Realisateur.objects.get(nom=realisateur_nom, prenom=realisateur_prenom)
         except Realisateur.DoesNotExist:
@@ -42,6 +61,7 @@ class FilmCreate(CreateView):
             realisateur = Realisateur(nom=realisateur_nom, prenom=realisateur_prenom)
             realisateur.save()
 
+        film = form.save(commit=False)
         film.realisateur = realisateur
         film.save()
 
@@ -115,15 +135,25 @@ class RealisateurCreate(CreateView):
         return context
     
     def form_valid(self, form):
-        form = RealisateurForm(self.request.POST)
-        if self.request.method == "POST":
-            self.object = Realisateur  # Assurez-vous que self.object est défini
-            if form.is_valid():
-                realisateur = form.save()
-                return HttpResponseRedirect(self.get_success_url())
-            else:
-                return self.render_to_response(self.get_context_data(form=form))
+        nom = self.request.POST.get('nom').capitalize()
+        prenom = self.request.POST.get('prenom').capitalize()
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+        close_matches = []
+        # Vérification en BD si similaire realisateur
+        realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
+        if realisateurs.exists():
+            self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
+            for real in self.realisateurs_similaires:
+                if ratio(nom_prenom, real) > 0.8:
+                    close_matches.append(real)
+        # Si c'est le cas --> erreur
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            form.add_error("nom",f"Attention, un réalisateur similaire est déjà enregistré : {formatted_matches}")
+            return self.form_invalid(form)
 
+
+        return super().form_valid(form)
 
 class RealisateurUpdate(UpdateView):
     model = Realisateur
@@ -141,6 +171,27 @@ class RealisateurUpdate(UpdateView):
         realisateur = form.save()
         self.object = realisateur  # Assurez-vous que self.object est défini
         return HttpResponseRedirect(self.get_success_url())
+    
+    def form_valid(self, form):
+        nom = self.request.POST.get('nom').capitalize()
+        prenom = self.request.POST.get('prenom').capitalize()
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+        close_matches = []
+        # Vérification en BD si similaire realisateur
+        realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
+        if realisateurs.exists():
+            self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
+            for real in self.realisateurs_similaires:
+                if ratio(nom_prenom, real) > 0.8:
+                    close_matches.append(real)
+        # Si c'est le cas --> erreur
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            form.add_error("nom",f"Attention, un réalisateur similaire est déjà enregistré : {formatted_matches}")
+            return self.form_invalid(form)
+
+
+        return super().form_valid(form)
 
 class RealisateurDeleteView(DeleteView):
     model = Realisateur
@@ -178,14 +229,25 @@ class ActeurCreate(CreateView):
         return context
     
     def form_valid(self, form):
-        form = ActeurForm(self.request.POST)
-        if self.request.method == "POST":
-            self.object = Acteur  # Assurez-vous que self.object est défini
-            if form.is_valid():
-                acteur = form.save()
-                return HttpResponseRedirect(self.get_success_url())
-            else:
-                return self.render_to_response(self.get_context_data(form=form))
+        nom = self.request.POST.get('nom').capitalize()
+        prenom = self.request.POST.get('prenom').capitalize()
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+        close_matches = []
+        # Vérification en BD si similaire acteur
+        acteurs = Acteur.objects.exclude(pk=self.object.pk if self.object else None)
+        if acteurs.exists():
+            self.acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
+            for real in self.acteurs_similaires:
+                if ratio(nom_prenom, real) > 0.8:
+                    close_matches.append(real)
+        # Si c'est le cas --> erreur
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            form.add_error("nom",f"Attention, un acteur similaire est déjà enregistré : {formatted_matches}")
+            return self.form_invalid(form)
+
+
+        return super().form_valid(form)
 
 
 class ActeurUpdate(UpdateView):
@@ -201,9 +263,24 @@ class ActeurUpdate(UpdateView):
         return context
 
     def form_valid(self, form):
-        acteur = form.save()
-        self.object = acteur  # Assurez-vous que self.object est défini
-        return HttpResponseRedirect(self.get_success_url())
+        nom = self.request.POST.get('nom').capitalize()
+        prenom = self.request.POST.get('prenom').capitalize()
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+        close_matches = []
+        # Vérification en BD si similaire acteur
+        acteurs = Acteur.objects.exclude(pk=self.object.pk if self.object else None)
+        if acteurs.exists():
+            self.acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
+            for real in self.acteurs_similaires:
+                if ratio(nom_prenom, real) > 0.8:
+                    close_matches.append(real)
+        # Si c'est le cas --> erreur
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            form.add_error("nom",f"Attention, un acteur similaire est déjà enregistré : {formatted_matches}")
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
 
 class ActeurDeleteView(DeleteView):
     model = Acteur
