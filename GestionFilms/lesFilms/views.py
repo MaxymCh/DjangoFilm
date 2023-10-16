@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 
 # Create your views here.
+from django import forms
 
 from lesFilms.forms import FilmForm, RealisateurForm, ActeurForm
 from lesFilms.models import Film, Realisateur, Acteur
@@ -93,11 +94,17 @@ class FilmListView(ListView):
 def create_acteur_in_film(request):
     if request.method == "POST":
         form = ActeurForm(request.POST)
-        if form.is_valid():
+        if(request.POST["force"] == "-1"):
             acteur = form.save()
-            return JsonResponse({"id": acteur.id, "name": str(acteur)})
+            return JsonResponse({"id": acteur.id, "name": str(acteur), "cree": True})            
         else:
-            return JsonResponse({"error": "Invalid form data"}, status=400)
+            try:
+                acteur = Acteur.objects.filter(nom=request.POST["nom"], prenom=request.POST["prenom"])[:1].get()
+                return JsonResponse({"liste_acteurs": [{'nom': "DiCaprio", "prenom": "Leonardo", 'id':"1"}, {'nom': request.POST["nom"], "prenom": request.POST["prenom"], 'id':acteur.id}], "cree": False})
+            except Acteur.DoesNotExist:
+                acteur = form.save()
+                return JsonResponse({"id": acteur.id, "name": str(acteur), "cree": True})
+
 
 # Réalisateur
 

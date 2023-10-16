@@ -68,32 +68,4 @@ class ActeurForm(forms.ModelForm):
         model = Acteur
         fields = "__all__"
     
-    def clean(self):
-        cleaned_data = super().clean()
-        nom = cleaned_data.get('nom')
-        prenom = cleaned_data.get('prenom')
-        nom_prenom = f"{nom.lower()} {prenom.lower()}"
 
-
-        if not nom or not prenom:
-            return cleaned_data
-        
-        close_matches = []
-        max_length_difference = 2
-
-        acteurs_similaires = Acteur.objects.exclude(pk=self.instance.pk if self.instance else None)
-        if acteurs_similaires.exists():
-            self.acteurs_similaires = [f"{acteur.nom.lower()} {acteur.prenom.lower()}" for acteur in acteurs_similaires]
-            for acteur_proche in self.acteurs_similaires:
-                length_difference = abs(len(nom_prenom) - len(acteur_proche))
-                if nom_prenom in acteur_proche or acteur_proche in nom_prenom:
-                    if length_difference <= max_length_difference:
-                        close_matches.append(acteur_proche)
-                    elif length_difference <= max_length_difference:
-                        close_matches.append(acteur_proche)
-                elif levenshtein_distance(nom_prenom, acteur_proche) <= 1:
-                    close_matches.append(acteur_proche)
-        if close_matches != []:
-            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
-            raise forms.ValidationError(f"Attention, un acteur similaire est déjà enregistré : {formatted_matches}")
-        return cleaned_data

@@ -19,6 +19,9 @@
     <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
     <div id="Création acteur" hidden>
       {{ acteur_form }}
+      <div id="acteurs_similaire">
+
+      </div>
       <button type="button" onclick="createActeur()">Crée l'Acteur</button>
     </div>
 
@@ -49,6 +52,19 @@
     if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
     formData.append("nom", acteurInputNom.value);
     formData.append("prenom", acteurInputPrenom.value);
+    let force = false;
+    if(document.getElementById('select-acteurs-similaire')){
+      if(document.getElementById('select-acteurs-similaire').value == "-1"){
+        const acteursSelect = document.querySelector('select[name="acteurs"]');
+        acteursSelect.value=document.getElementById('select-acteurs-similaire').value;
+        return true
+      }
+      else{
+        document.getElementById('id_acteurs')
+      }
+    }
+    formData.append("force", force);
+
     fetch("{% url 'create_acteur_in_film' %}", {
       method: "POST",
       headers: {
@@ -58,13 +74,48 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        const newOption = new Option(data.name, data.id, true, true);
-        const acteursSelect = document.querySelector('select[name="acteurs"]');
-        acteursSelect.append(newOption);
-        acteurInputNom.value ="";
-        acteurInputPrenom.value ="";
-        const divActeur = document.getElementById("Création acteur");
-        divActeur.hidden = true;
+        if(data["cree"]){
+          const newOption = new Option(data.name, data.id, true, true);
+          const acteursSelect = document.querySelector('select[name="acteurs"]');
+          acteursSelect.append(newOption);
+          acteurInputNom.value ="";
+          acteurInputPrenom.value ="";
+          const divActeur = document.getElementById("Création acteur");
+          divActeur.hidden = true;
+        }
+        else{
+          const divActeursSimilaire = document.getElementById("acteurs_similaire");
+          const acteurs_proches = data["liste_acteurs"];
+          let select;
+          if (!document.getElementById('select-acteurs-similaire')){
+            select = document.createElement('select');
+            select.id = 'select-acteurs-similaire';
+            select.name = 'select-acteurs-similaire';
+            divActeursSimilaire.appendChild(select);
+
+          }
+          else{
+            select = document.getElementById('select-acteurs-similaire');
+          }
+          select.innerHTML = "";
+          let option = document.createElement('option');
+          option.value = -1;
+          option.textContent = "Forcer la validation";
+          select.appendChild(option);
+
+          for (var i = 0; i < acteurs_proches.length; i++) {
+            option = document.createElement('option');
+            option.id = "option-"+acteurs_proches[i].id;
+            option.value = acteurs_proches[i].id;
+            option.textContent = acteurs_proches[i].nom;
+            $(option).attr('nom', acteurs_proches[i].nom);
+            $(option).attr('prenom', acteurs_proches[i].prenom);
+
+            select.appendChild(option);
+          }
+
+        }
+        
       });
   }
 
