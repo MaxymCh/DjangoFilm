@@ -20,8 +20,11 @@
     <div id="Création acteur" hidden>
       {{ acteur_form }}
       <div id="acteurs_similaire">
-
+        <span id="erreurMessage" style="color:red"></span><br><br>
       </div>
+      <input id="force-insertion" type="checkbox">
+      <label for="force-insertion">Forcer l'insertion</label>
+
       <button type="button" onclick="createActeur()">Crée l'Acteur</button>
     </div>
 
@@ -52,17 +55,7 @@
     if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
     formData.append("nom", acteurInputNom.value);
     formData.append("prenom", acteurInputPrenom.value);
-    let force = false;
-    if(document.getElementById('select-acteurs-similaire')){
-      if(document.getElementById('select-acteurs-similaire').value == "-1"){
-        const acteursSelect = document.querySelector('select[name="acteurs"]');
-        acteursSelect.value=document.getElementById('select-acteurs-similaire').value;
-        return true
-      }
-      else{
-        document.getElementById('id_acteurs')
-      }
-    }
+    let force = document.getElementById("force-insertion").checked;
     formData.append("force", force);
 
     fetch("{% url 'create_acteur_in_film' %}", {
@@ -84,6 +77,7 @@
           divActeur.hidden = true;
         }
         else{
+          document.getElementById("erreurMessage").innerHTML = "Il y a un ou plusieurs acteurs similaire en voici la liste"
           const divActeursSimilaire = document.getElementById("acteurs_similaire");
           const acteurs_proches = data["liste_acteurs"];
           let select;
@@ -98,16 +92,11 @@
             select = document.getElementById('select-acteurs-similaire');
           }
           select.innerHTML = "";
-          let option = document.createElement('option');
-          option.value = -1;
-          option.textContent = "Forcer la validation";
-          select.appendChild(option);
-
           for (var i = 0; i < acteurs_proches.length; i++) {
             option = document.createElement('option');
             option.id = "option-"+acteurs_proches[i].id;
             option.value = acteurs_proches[i].id;
-            option.textContent = acteurs_proches[i].nom;
+            option.textContent = acteurs_proches[i].prenom +" "+acteurs_proches[i].nom;
             $(option).attr('nom', acteurs_proches[i].nom);
             $(option).attr('prenom', acteurs_proches[i].prenom);
 

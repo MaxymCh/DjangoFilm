@@ -94,7 +94,7 @@ class FilmListView(ListView):
 def create_acteur_in_film(request):
     if request.method == "POST":
         form = ActeurForm(request.POST)
-        if(request.POST["force"] == "-1"):
+        if(request.POST["force"] == "true"):
             acteur = form.save()
             return JsonResponse({"id": acteur.id, "name": str(acteur), "cree": True})            
         else:
