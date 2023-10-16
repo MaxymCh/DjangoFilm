@@ -55,6 +55,34 @@ class FilmForm(forms.ModelForm):
             formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
             raise forms.ValidationError(f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
         return titre_original
+    
+    def clean_realisateur_prenom(self):
+        nom = self.cleaned_data['realisateur_nom']
+        prenom = self.cleaned_data.get('realisateur_prenom')
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+        print(nom_prenom)
+        if not nom or not prenom:
+            return self.cleaned_data
+        
+        close_matches = []
+        max_length_difference = 2
+        realisateurs = Realisateur.objects.exclude(pk=self.instance.pk if self.instance else None)
+        if realisateurs.exists():
+            self.realisateurs = [f"{acteur.nom.capitalize()} {acteur.prenom.capitalize()}" for acteur in realisateurs]
+            for acteur_proche in self.realisateurs:
+                if acteur_proche != nom_prenom:
+                    length_difference = abs(len(nom_prenom) - len(acteur_proche))
+                    if nom_prenom in acteur_proche or acteur_proche in nom_prenom:
+                        if length_difference <= max_length_difference:
+                            close_matches.append(acteur_proche)
+                        elif length_difference <= max_length_difference:
+                            close_matches.append(acteur_proche)
+                    elif levenshtein_distance(nom_prenom, acteur_proche) <= 1:
+                        close_matches.append(acteur_proche)
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            raise forms.ValidationError(f"Attention, un réalisateur similaire est déjà enregistré : {formatted_matches}")
+        return self.cleaned_data
 
 
 class RealisateurForm(forms.ModelForm):
@@ -62,6 +90,35 @@ class RealisateurForm(forms.ModelForm):
         model = Realisateur
         fields = "__all__"
 
+    def clean(self):
+        cleaned_data = super().clean()
+        nom = cleaned_data.get('nom')
+        prenom = cleaned_data.get('prenom')
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
+        print(nom_prenom)
+
+        if not nom or not prenom:
+            return cleaned_data
+        
+        close_matches = []
+        max_length_difference = 2
+
+        acteurs_similaires = Realisateur.objects.exclude(pk=self.instance.pk if self.instance else None)
+        if acteurs_similaires.exists():
+            self.acteurs_similaires = [f"{acteur.nom.capitalize()} {acteur.prenom.capitalize()}" for acteur in acteurs_similaires]
+            for acteur_proche in self.acteurs_similaires:
+                length_difference = abs(len(nom_prenom) - len(acteur_proche))
+                if nom_prenom in acteur_proche or acteur_proche in nom_prenom:
+                    if length_difference <= max_length_difference:
+                        close_matches.append(acteur_proche)
+                    elif length_difference <= max_length_difference:
+                        close_matches.append(acteur_proche)
+                elif levenshtein_distance(nom_prenom, acteur_proche) <= 1:
+                    close_matches.append(acteur_proche)
+        if close_matches != []:
+            formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
+            raise forms.ValidationError(f"Attention, un réalisateur similaire est déjà enregistré : {formatted_matches}")
+        return cleaned_data
 
 class ActeurForm(forms.ModelForm):
     class Meta:
@@ -72,7 +129,7 @@ class ActeurForm(forms.ModelForm):
         cleaned_data = super().clean()
         nom = cleaned_data.get('nom')
         prenom = cleaned_data.get('prenom')
-        nom_prenom = f"{nom.lower()} {prenom.lower()}"
+        nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
 
 
         if not nom or not prenom:
@@ -83,7 +140,7 @@ class ActeurForm(forms.ModelForm):
 
         acteurs_similaires = Acteur.objects.exclude(pk=self.instance.pk if self.instance else None)
         if acteurs_similaires.exists():
-            self.acteurs_similaires = [f"{acteur.nom.lower()} {acteur.prenom.lower()}" for acteur in acteurs_similaires]
+            self.acteurs_similaires = [f"{acteur.nom.capitalize()} {acteur.prenom.capitalize()}" for acteur in acteurs_similaires]
             for acteur_proche in self.acteurs_similaires:
                 length_difference = abs(len(nom_prenom) - len(acteur_proche))
                 if nom_prenom in acteur_proche or acteur_proche in nom_prenom:
