@@ -17,7 +17,8 @@
         </div>
       </div>
       {{ form.as_p }}
-  </form>
+      <button id="submit-form-film" type="submit" hidden>Valider</button>
+
 
   <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
   <div id="Création acteur" hidden>
@@ -25,8 +26,8 @@
     <div id="acteurs_similaire">
       <span id="erreurMessage" style="color:red"></span><br><br>
     </div>
-    <input id="force-insertion" type="checkbox">
-    <label for="force-insertion">Forcer l'insertion</label>
+    <input id="force-insertion-acteur" type="checkbox">
+    <label for="force-insertion-acteur">Forcer l'insertion</label>
 
     <button type="button" onclick="createActeur()" class="btn btn-primary">Crée l'Acteur</button>
     <button type="button" onclick="resetCreateActeur()" class="btn btn-danger">Annuler</button>
@@ -35,9 +36,13 @@
   <div class="form-group row">
     <label class="col-sm-1 col-form-label"></label>
     <div class="col-sm-4">
+      <input id="force-insertion-film-real" name="force-insertion-film-real" type="checkbox">
+      <label for="force-insertion-film-real">Forcer l'insertion</label>
       <button type="button" onclick="validateFomulaireCreateFilm()" class="btn btn-success">Valider</button>
     </div>
   </div>
+</form>
+
 </div>
 
 
@@ -45,7 +50,9 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("force-insertion").checked = false
+    document.getElementById("id_nom").required = false
+    document.getElementById("id_prenom").required = false
+    document.getElementById("force-insertion-acteur").checked = false
     $('#id_acteurs').select2({
         placeholder: "Sélectionnez une option", // texte à afficher par défaut
         allowClear: true, // permet de supprimer la sélection
@@ -65,7 +72,7 @@
       const formData = new FormData();
       formData.append("nom", acteurInputNom.value);
       formData.append("prenom", acteurInputPrenom.value);
-      let force = document.getElementById("force-insertion").checked;
+      let force = document.getElementById("force-insertion-acteur").checked;
       formData.append("force", force);
 
       fetch("{% url 'create_acteur_in_film' %}", {
@@ -96,7 +103,7 @@
 
   function resetCreateActeur(){
     document.getElementById("erreurMessage").innerHTML = "";
-    document.getElementById("force-insertion").checked = false
+    document.getElementById("force-insertion-acteur").checked = false
     const acteurInputNom = document.getElementById("id_nom");
     const acteurInputPrenom = document.getElementById("id_prenom");
     acteurInputNom.value ="";
@@ -109,10 +116,7 @@
 
 
   function validateFomulaireCreateFilm(){
-    const formulaire = document.getElementById("form-create-film");
-    if (formulaire.checkValidity()) {
-      formulaire.submit();
-    }
+    document.getElementById('submit-form-film').click()
   }
 
   function ajouterOptionActeurToSelect(data){
