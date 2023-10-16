@@ -32,10 +32,9 @@ class FilmCreate(CreateView):
         return context
 
     def form_valid(self, form):   
-        realisateur_nom = self.request.POST.get('realisateur_nom')
-        realisateur_prenom = self.request.POST.get('realisateur_prenom')
+        realisateur_nom = self.request.POST.get('realisateur_nom').capitalize()
+        realisateur_prenom = self.request.POST.get('realisateur_prenom').capitalize()
         film = form.save(commit=False)
-
         try:
             realisateur = Realisateur.objects.get(nom=realisateur_nom, prenom=realisateur_prenom)
         except Realisateur.DoesNotExist:
@@ -114,6 +113,16 @@ class RealisateurCreate(CreateView):
         context["action_name"] = "Création"
         context["action_description"] = "Entrez les informations du"
         return context
+    
+    def form_valid(self, form):
+        form = RealisateurForm(self.request.POST)
+        if self.request.method == "POST":
+            self.object = Realisateur  # Assurez-vous que self.object est défini
+            if form.is_valid():
+                realisateur = form.save()
+                return HttpResponseRedirect(self.get_success_url())
+            else:
+                return self.render_to_response(self.get_context_data(form=form))
 
 
 class RealisateurUpdate(UpdateView):
@@ -128,6 +137,10 @@ class RealisateurUpdate(UpdateView):
         context["action_name"] = "Modifier le"
         return context
 
+    def form_valid(self, form):
+        realisateur = form.save()
+        self.object = realisateur  # Assurez-vous que self.object est défini
+        return HttpResponseRedirect(self.get_success_url())
 
 class RealisateurDeleteView(DeleteView):
     model = Realisateur
@@ -187,6 +200,10 @@ class ActeurUpdate(UpdateView):
         context["action_name"] = "Modifier le"
         return context
 
+    def form_valid(self, form):
+        acteur = form.save()
+        self.object = acteur  # Assurez-vous que self.object est défini
+        return HttpResponseRedirect(self.get_success_url())
 
 class ActeurDeleteView(DeleteView):
     model = Acteur
