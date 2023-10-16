@@ -16,9 +16,11 @@
       </div>
     </div>
     {{ form.as_p }}
-    <a href="#" data-bs-toggle="modal"
-    data-bs-target="#createActeurModal" class="open-createModal">Ajouter Acteur
-    </a>
+    <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
+    <div id="Création acteur" hidden>
+      {{ acteur_form }}
+      <button type="button" onclick="createActeur()">Crée l'Acteur</button>
+    </div>
 
     <div class="form-group row">
       <label class="col-sm-1 col-form-label"></label>
@@ -29,80 +31,42 @@
   </div>
 </form>
 
-<div
-  class="modal fade"
-  id="createActeurModal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">
-          Création de Realisteur
-        </h5>
-        <button type="button"  class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="input-acteur-prenom">Prenom</label>
-          <input type="text" class="form-control" id="input-acteur-prenom">
-        </div>
-        <div class="form-group">
-          <label for="input-acteur-nom">Nom</label>
-          <input type="text" class="form-control" id="input-acteur-nom">
-        </div>
-      </div>
-      <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">Annuler
-          </button>
-          <button type="button" class="btn btn-success" id="btn-create-acteur">Crée</button>
-      </div>
-    </div>
-  </div>
-</div>  
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const modalCreateActeurSubmit = document.getElementById(
-      "btn-create-acteur"
-    );
-    modalCreateActeurSubmit.addEventListener("click", function (e) {
-      e.preventDefault();
-      const formData = new FormData();
-      const acteurInputNom = document.getElementById("input-acteur-nom");
-      const acteurInputPrenom = document.getElementById("input-acteur-prenom");
-      if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
-      formData.append("nom", acteurInputNom.value);
-      formData.append("prenom", acteurInputPrenom.value);
-      fetch("{% url 'create_acteur_in_film' %}", {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": getCookie("csrftoken"),
-        },
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const newOption = new Option(data.name, data.id, true, true);
-          const acteursSelect = document.querySelector('select[name="acteurs"]');
-          acteursSelect.append(newOption);
-          acteurInputNom.value ="";
-          acteurInputPrenom.value ="";
-          $('#createActeurModal').modal('hide');
-        });
-    });
-
-    
 
   });
+  
+  function addActeur(){
+    const divActeur = document.getElementById("Création acteur");
+    divActeur.hidden = false;
+  }
+
+  function createActeur(){
+    const formData = new FormData();
+    const acteurInputNom = document.getElementById("id_nom");
+    const acteurInputPrenom = document.getElementById("id_prenom");
+    if(acteurInputNom.checkValidity() && acteurInputPrenom.checkValidity())
+    formData.append("nom", acteurInputNom.value);
+    formData.append("prenom", acteurInputPrenom.value);
+    fetch("{% url 'create_acteur_in_film' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const newOption = new Option(data.name, data.id, true, true);
+        const acteursSelect = document.querySelector('select[name="acteurs"]');
+        acteursSelect.append(newOption);
+        acteurInputNom.value ="";
+        acteurInputPrenom.value ="";
+        const divActeur = document.getElementById("Création acteur");
+        divActeur.hidden = true;
+      });
+  }
 
   function createInputPerso(inputName, divFormGroup, numberID){
 

@@ -26,7 +26,7 @@ class FilmCreate(CreateView):
         context["action_name"] = "Création"
         context["action_description"] = "Entrez les informations du"
         context["realisateur_form"] = RealisateurForm(self.request.POST or None)
-        context["acteur_from"] = ActeurForm(self.request.POST or None)
+        context["acteur_form"] = ActeurForm(self.request.POST or None)
 
 
         return context
