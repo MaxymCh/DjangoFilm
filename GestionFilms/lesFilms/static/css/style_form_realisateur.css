@@ -1,0 +1,36 @@
+body {
+    background-color: #f0f0f0; /* Couleur d'arrière-plan gris pour tout le body */
+}
+
+.form-title {
+    font-size: 1.5rem; /* ou n'importe quelle taille qui vous convient */
+    font-weight: bold;
+}
+
+.form-container {
+    background-color: #f8f9fa; /* gris léger pour l'arrière-plan du formulaire */
+    padding: 20px;
+    border-radius: 5px; /* rend les coins du conteneur légèrement arrondis */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* ombre légère autour du conteneur */
+}
+
+#form-create-film input[type="text"],
+#form-create-film input[type="email"],
+#form-create-film input[type="password"],
+#form-create-film textarea,
+#form-create-film select {
+    width: 100%;
+}
+
+
+#form-create-film label {
+    font-size: larger; 
+}
+
+.title-center-bold {
+    text-align: center;
+    font-weight: bold;
+}
+input[type="text"] {
+    width: 100%; 
+}

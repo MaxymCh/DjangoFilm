@@ -2,13 +2,14 @@
 {% block title %}{{ action_name }} {{ class_name }}{% endblock %}
 
 {% load static %}
-{% block style %}<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />
+{% endblock %}
 
 {% block content %}
 <form method="post" class="post-form">
     {% csrf_token %}
     <div class="container container-form">
-        <br />
         <div class="form-group row">
             <label class="col-sm-1 col-form-label"></label>
             <div class="col-sm-4">
