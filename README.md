@@ -5,9 +5,13 @@ Ce projet Django consiste à gérer une collection de films, en incluant des inf
 
 ### Fonctionnalités :
 - **CRUD (Création, Lecture, Mise à jour, Suppression) pour chaque modèle (Film, Réalisateur, Acteur).**
+- Ajout des acteurs et réalisateur lors de la création d'un film.
+- Vérification de l'existence des films, acteurs, et réalisateurs avant leur ajout à la base de données.
+- Vérification de l'existence d'un film avec un titre, réalisateur, acteur quasiment similaire avant son ajout à la base de données.
 - Versionnage correct du projet avec des tags indiquant les différentes étapes.
 - Tests unitaires pour chaque étape.
 - Mise en oeuvre de Bootstrap 5 pour le styling.
+
 
 ## Configuration Initiale
 
