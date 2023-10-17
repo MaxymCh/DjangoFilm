@@ -34,6 +34,10 @@ from django.test import TestCase, Client
 from .models import Realisateur, Film
 
 class ActeurViewTestCase(TestCase):
+    def setUp(self):
+        # Créez un acteur qui peut être utilisé dans plusieurs tests
+        self.acteur = Acteur.objects.create(nom='Depardieu', prenom='Gerard')
+
     def test_realisateur_creation(self):
         """Teste la création réussie d'un acteur."""
         nombre_de_acteur_initial = Acteur.objects.count()  # Assurez-vous que acteur est importé depuis vos models
@@ -75,10 +79,35 @@ class ActeurViewTestCase(TestCase):
         self.assertEqual(response_with_duplicate_name.status_code, 200)  # Aucune redirection, la création a échoué
 
         # Vérifiez que le nombre de acteurs n'a pas changé
-        self.assertEqual(Acteur.objects.count(), 1)
+        self.assertEqual(Acteur.objects.count(), 2)
+    
+    def test_acteur_update(self):
+        """Teste la mise à jour réussie d'un acteur."""
+        url = reverse('acteur_edit', kwargs={'pk': self.acteur.pk})
+        response = self.client.post(url, {
+            'nom': 'Depardieu',
+            'prenom': 'Gérard',
+        })
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la mise à jour réussie
+        self.acteur.refresh_from_db()
+        self.assertEqual(self.acteur.prenom, 'Gérard')  # Assurez-vous que le prénom a bien été mis à jour
+
+    def test_acteur_delete(self):
+        """Teste la suppression réussie d'un acteur."""
+        nombre_d_acteurs_initial = Acteur.objects.count()
+        url = reverse('acteur_delete', kwargs={'pk': self.acteur.pk})
+        response = self.client.post(url)  # La méthode DeleteView attend une requête POST
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la suppression réussie
+        self.assertEqual(Acteur.objects.count(), nombre_d_acteurs_initial - 1)
+
+
 
 
 class RealisateurViewTestCase(TestCase):
+    def setUp(self):
+        # Créez un acteur qui peut être utilisé dans plusieurs tests
+        self.realisateur = Realisateur.objects.create(nom='Nolan', prenom='Christopher ')
+
     def test_realisateur_creation(self):
         """Teste la création réussie d'un réalisateur."""
         nombre_de_realisateur_initial = Realisateur.objects.count()  # Assurez-vous que Realisateur est importé depuis vos models
@@ -120,10 +149,30 @@ class RealisateurViewTestCase(TestCase):
         self.assertEqual(response_with_duplicate_name.status_code, 200)  # Aucune redirection, la création a échoué
 
         # Vérifiez que le nombre de réalisateurs n'a pas changé
-        self.assertEqual(Realisateur.objects.count(), 1)
+        self.assertEqual(Realisateur.objects.count(), 2)
+
+    def test_realisateur_update(self):
+        """Teste la mise à jour réussie d'un réalisateur."""
+        url = reverse('realisateur_edit', kwargs={'pk': self.realisateur.pk})
+        response = self.client.post(url, {
+            'nom': 'Acteur',
+            'prenom': 'Nouveau',
+        })
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la mise à jour réussie
+        self.realisateur.refresh_from_db()
+        self.assertEqual(self.realisateur.prenom, 'Nouveau')  # Assurez-vous que le prénom a bien été mis à jour
+
+    def test_realisateur_delete(self):
+        """Teste la suppression réussie d'un realisateur."""
+        nombre_de_realisateur_initial = Realisateur.objects.count()
+        url = reverse('realisateur_delete', kwargs={'pk': self.realisateur.pk})
+        response = self.client.post(url)  # La méthode DeleteView attend une requête POST
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la suppression réussie
+        self.assertEqual(Realisateur.objects.count(), nombre_de_realisateur_initial - 1)
 
 
 class FilmViewTestCase(TestCase):
+
     def test_film_creation(self):
         """Teste la création réussie d'un film."""
         nombre_de_film_initial = Film.objects.count()
@@ -164,5 +213,4 @@ class FilmViewTestCase(TestCase):
 
         # Vérifiez que le nombre de films n'a pas changé
         self.assertEqual(Film.objects.count(), 1)
-
 
