@@ -2,47 +2,42 @@
 {% block title %}{{ action_name }} {{class_name }}{% endblock %}
 
 {% load static %}
-{% block style %}<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />
+{% endblock %}
 
 {% block content %}
-<div class="container container-form">
-
+<div class="container py-1">
   <form method="post" class="post-form" id="form-create-film">
     {% csrf_token %}
-      <br />
-      <div class="form-group row">
-        <label class="col-sm-1 col-form-label"></label>
-        <div class="col-sm-4">
-          <h3>{{ action_description }} {{ class_name }}</h3>
-        </div>
+    <div class="mb-3">
+      <h3 class="title-center-bold">Créer un film</h3>
+    </div>
+    {{ form.as_p }}
+    <div class="mb-3">
+      <button id="submit-form-film" type="submit" class="btn btn-primary" hidden>Valider</button>
+      <button type="button" class="btn btn-primary" onclick="addActeur()">Ajouter Acteur</button>
+    </div>
+
+    <div id="Création acteur" hidden>
+      {{ acteur_form }}
+      <div id="acteurs_similaire" class="mb-3">
+        <span id="erreurMessage" class="text-danger"></span>
       </div>
-      {{ form.as_p }}
-      <button id="submit-form-film" type="submit" hidden>Valider</button>
-
-
-  <button type="button" onclick="addActeur()" class="btn btn-primary">Ajouter Acteur</button>
-  <div id="Création acteur" hidden>
-    {{ acteur_form }}
-    <div id="acteurs_similaire">
-      <span id="erreurMessage" style="color:red"></span><br><br>
+      <div class="mb-3 form-check">
+        <input id="force-insertion-acteur" type="checkbox" class="form-check-input">
+        <label class="form-check-label" for="force-insertion-acteur">Forcer l'insertion</label>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="createActeur()">Créer Acteur</button>
+      <button type="button" class="btn btn-danger" onclick="resetCreateActeur()">Annuler</button>
     </div>
-    <input id="force-insertion-acteur" type="checkbox">
-    <label for="force-insertion-acteur">Forcer l'insertion</label>
 
-    <button type="button" onclick="createActeur()" class="btn btn-primary">Crée l'Acteur</button>
-    <button type="button" onclick="resetCreateActeur()" class="btn btn-danger">Annuler</button>
-
-  </div>
-  <div class="form-group row">
-    <label class="col-sm-1 col-form-label"></label>
-    <div class="col-sm-4">
-      <input id="force-insertion-film-real" name="force-insertion-film-real" type="checkbox">
-      <label for="force-insertion-film-real">Forcer l'insertion</label>
-      <button type="button" onclick="validateFomulaireCreateFilm()" class="btn btn-success">Valider</button>
+    <div class="mb-3 form-check">
+      <input id="force-insertion-film-real" name="force-insertion-film-real" type="checkbox" class="form-check-input">
+      <label class="form-check-label" for="force-insertion-film-real">Forcer l'insertion</label>
     </div>
-  </div>
-</form>
-
+    <button type="button" class="btn btn-success" onclick="validateFomulaireCreateFilm()">Valider</button>
+  </form>
 </div>
 
 
