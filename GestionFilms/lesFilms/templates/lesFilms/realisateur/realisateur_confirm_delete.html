@@ -1,0 +1,18 @@
+{% extends "lesFilms/base.html" %}
+{% block title %}Supprimer Réalisateur{% endblock %}
+{% load static %}
+{% block style %}<link rel="stylesheet" href="{% static 'css/style_list.css' %}" />{% endblock %}
+
+{% block content %}
+
+<h2>Supprimer {{ object.prenom }} {{ object.nom }}</h2>
+<p>Le réalisateur {{ object.prenom }} {{ object.nom }} possède au moins un films. Êtes-vous sûr de vouloir le supprimer ainsi que tous ses films ?</p>
+
+<form action="{% url 'realisateur_delete' object.id %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="id" id="id" value="{{ object.id }}" hidden>
+    <button type="submit" class="btn btn-danger">Valider</button>
+    <a href="{% url 'realisateur_list' %}" class="btn btn-secondary">Annuler</a>
+</form>
+
+{% endblock %}

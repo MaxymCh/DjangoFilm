@@ -6,10 +6,11 @@ from django import forms
 from lesFilms.forms import FilmForm, RealisateurForm, ActeurForm
 from lesFilms.models import Film, Realisateur, Acteur
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.contrib import messages
 
 from Levenshtein import ratio
 
@@ -276,13 +277,31 @@ class RealisateurUpdate(UpdateView):
 
         return super().form_valid(form)
 
-
 class RealisateurDeleteView(DeleteView):
     model = Realisateur
     success_url = reverse_lazy("realisateur_list")
+    
+    def form_valid(self, form):
+        realisateur_id = self.request.POST.get('id')
+        if realisateur_id is not None:
+            return super().form_valid(form)
 
-    def get(self, *args, **kwargs):
-        return self.post(*args, **kwargs)
+        object = self.get_object()
+        realisateur_id = self.kwargs.get('pk')
+        realisateur = get_object_or_404(Realisateur, id=realisateur_id)
+
+        # Vérification avant la suppression
+        if realisateur.films.exists():
+            return render(self.request, 'lesFilms/realisateur/realisateur_confirm_delete.html', {'object': realisateur})
+
+        return super().form_valid(form)
+        
+
+
+
+
+
+
 
 
 class RealisateurListView(ListView):
