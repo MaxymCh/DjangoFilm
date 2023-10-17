@@ -1,0 +1,76 @@
+/* Applique un style aux en-têtes de la table */
+.thead-dark th {
+    background-color: #343a40; /* Couleur de fond sombre pour les en-têtes */
+    color: white; /* Texte blanc pour les en-têtes */
+}
+
+/* Améliore l'apparence des lignes de table au survol */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa; /* Couleur de fond légère au survol */
+}
+
+/* Style pour les boutons d'action */
+.table .btn {
+    margin-right: 5px; /* Espace entre les boutons */
+}
+
+/* Style pour les icônes d'action */
+.glyphicon {
+    margin-right: 3px; /* Espace avant le texte */
+}
+
+/* Style pour le bouton d'ajout d'un nouvel acteur */
+.btn-primary {
+    background-color: #007bff; /* Couleur de fond bleue pour le bouton principal */
+    border-color: #007bff; /* Couleur de bordure bleue pour le bouton principal */
+}
+
+/* Pagination */
+.pagination {
+    margin: 20px 0; /* Espace au-dessus et en-dessous de la pagination */
+}
+
+.step-links {
+    margin: 20px 0; /* Espace au-dessus et en-dessous des liens d'étape */
+    text-align: center; /* Centre les liens d'étape */
+}
+
+.step-links a {
+    margin: 0 5px; /* Espace entre les liens */
+    color: #007bff; /* Couleur des liens */
+}
+
+/* Modal */
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.modal-title {
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Style pour les liens de pagination désactivés */
+.page-item.disabled .page-link {
+    color: #6c757d; /* Gris pour les liens désactivés */
+    pointer-events: none; /* Empêche les clics sur les liens désactivés */
+}

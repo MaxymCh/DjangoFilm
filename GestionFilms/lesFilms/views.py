@@ -173,6 +173,7 @@ class FilmListView(ListView):
     model = Film
     template_name = "lesFilms/film/film_list.html"  # Nom du template à utiliser
     context_object_name = "films"  # Nom de la variable à utiliser dans le template
+    paginate_by = 5
 
 
 def create_acteur_in_film(request):
@@ -292,6 +293,8 @@ class RealisateurListView(ListView):
     context_object_name = (
         "realisateurs"  # Nom de la variable à utiliser dans le template
     )
+    paginate_by = 5
+
 
 
 #Acteur 
@@ -387,3 +390,5 @@ class ActeurListView(ListView):
     context_object_name = (
         "acteurs"  # Nom de la variable à utiliser dans le template
     )
+    paginate_by = 5
+

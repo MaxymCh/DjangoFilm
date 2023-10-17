@@ -1,0 +1,66 @@
+.table {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+/* Style personnalisé pour les en-têtes de table */
+.table-dark th {
+    background-color: #333; /* couleur de fond sombre pour l'en-tête */
+    color: #fff; /* texte blanc pour l'en-tête */
+}
+
+/* Change le style de survol des lignes de la table */
+.table-hover tbody tr:hover {
+    background-color: #ddd; /* couleur de fond pour le survol des lignes de la table */
+}
+
+/* Ajoute du style aux boutons pour les rendre plus attrayants */
+.btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Centrer le contenu de la pagination */
+.pagination {
+    justify-content: center;
+}
+
+/* Style pour le modal */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    background-color: #6c757d; /* Gris foncé */
+    color: white; /* Texte blanc */
+}
+
+.modal-header .btn-close {
+    background-color: #fff; /* Bouton de fermeture blanc */
+    border-radius: 50%; /* Rend le bouton de fermeture circulaire */
+}
+
+.modal-footer .btn-danger {
+    background-color: #dc3545; /* Rouge pour le bouton de suppression */
+}
+
+/* Style pour les liens de pagination désactivés */
+.page-item.disabled .page-link {
+    color: #6c757d; /* Gris pour les liens désactivés */
+    pointer-events: none; /* Empêche les clics sur les liens désactivés */
+}
