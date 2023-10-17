@@ -13,10 +13,80 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 
 from Levenshtein import ratio
 
+def titre_similaire(self, titre):
+    """
+    La fonction `titre_similaire` vérifie si un titre de film donné est similaire à des titres de films
+    existants dans la base de données et renvoie une liste de correspondances proches.
+    
+    :param titre: Le paramètre "titre" est le titre d'un film pour lequel on souhaite trouver des titres
+    similaires
+    :return: une liste de correspondances proches du titre donné.
+    """
+    close_matches = []
+
+    # Vérification en BD si similaire titre film
+    titres_similaires = Film.objects.exclude(pk=self.object.pk if self.object else None)
+    titre = titre.lower()
+    # Si il existe un film dans la base de données
+    if titres_similaires.exists():
+        self.titres_similaires = [film.titre.lower() for film in titres_similaires]
+        for film_titre in self.titres_similaires:
+            # Si un film similaire à 70% existe dans la base de données
+            if ratio(titre, film_titre) > 0.7:
+
+                # On ajoute dans les films similaires proches
+                close_matches.append(film_titre)
+    return close_matches
+
+def realisateur_similaire(self, real_realisateur):
+    """
+    La fonction "réalisateur_similaire" vérifie si un réalisateur similaire existe dans la base de
+    données et renvoie une liste de correspondances proches.
+    
+    :param real_realisateur: Le paramètre "real_realisateur" est le nom d'un réalisateur pour lequel
+    vous souhaitez rechercher des réalisateurs similaires
+    :return: une liste de correspondances proches du paramètre "real_realisateur" donné.
+    """
+    close_matches = []
+    # Vérification en BD si similaire realisateur
+    realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
+
+    # Si un réalisateur existe dans la base de données
+    if realisateurs.exists():
+        self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
+        for real in self.realisateurs_similaires:
+
+            # Si un réalisateur similaire à 80% existe dans la base de données
+            if ratio(real_realisateur, real) > 0.8:
+
+                # On ajoute dans les réalisateurs similaires proches
+                close_matches.append(real)
+    return close_matches
+
+def acteur_similaire(self, acteur):
+    """
+    La fonction "acteur_similaire" vérifie s'il existe des acteurs similaires dans la base de données et
+    renvoie une liste de correspondances proches.
+    
+    :param acteur: Le paramètre "acteur" représente le nom d'un acteur
+    :return: une liste de correspondances proches de l'acteur donné.
+    """
+    close_matches = []
+    # Vérification en BD si similaire acteur
+    acteurs = Acteur.objects.exclude(pk=self.object.pk if self.object else None)
+    if acteurs.exists():
+        self.acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
+        for real in self.acteurs_similaires:
+            
+            # Si un acteur similaire à 80% existe dans la base de données
+            if ratio(acteur, real) > 0.8:
+
+                # On ajoute dans les acteurs similaires proches
+                close_matches.append(real)
+    return close_matches
 
 
 # Film
-
 
 class FilmCreate(CreateView):
     model = Film
@@ -32,22 +102,25 @@ class FilmCreate(CreateView):
 
         return context
 
-    def form_valid(self, form):   
+    def form_valid(self, form):
+        """
+        La fonction `form_valid` est chargée de valider et de sauvegarder un formulaire de film, y
+        compris de vérifier les titres de films similaires, les acteurs similaires et les réalisateurs similaires dans la base de
+        données.
+        
+        :param form: Le paramètre `form` est une instance d'une classe de formulaire Django. Il
+        représente les données du formulaire soumises par l'utilisateur
+        :return: un objet HttpResponseRedirect.
+        """
+        realisateur = None   
         realisateur_nom = self.request.POST.get('realisateur_nom').capitalize()
         realisateur_prenom = self.request.POST.get('realisateur_prenom').capitalize()
         force_insertion = self.request.POST.get('force-insertion-film-real') is not None
         if not force_insertion:
             form_is_invalid = False
             titre_film = self.request.POST.get('titre')
-            close_matches = []
-            # Vérification en BD si similaire titre film
-            titres_similaires = Film.objects.exclude(pk=self.object.pk if self.object else None)
-            if titres_similaires.exists():
-                self.titres_similaires = [film.titre.lower() for film in titres_similaires]
-                for film_titre in self.titres_similaires:
-                    if ratio(titre_film, film_titre) > 0.7:
-                        close_matches.append(film_titre)
-            # Si c'est le cas --> erreur
+            close_matches = titre_similaire(self, titre_film)
+            # Si titre similaire à celui qu'on ajoute --> erreur
             if close_matches != []:
                 formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
                 form.add_error("titre",f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
@@ -56,15 +129,9 @@ class FilmCreate(CreateView):
             realisateur = Realisateur.objects.filter(nom=realisateur_nom, prenom=realisateur_prenom).first()
             if realisateur is None:
                 nom_prenom = f"{realisateur_nom.capitalize()} {realisateur_prenom.capitalize()}"
-                close_matches = []
-                # Vérification en BD si similaire realisateur
-                realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
-                if realisateurs.exists():
-                    self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
-                    for real in self.realisateurs_similaires:
-                        if ratio(nom_prenom, real) > 0.8:
-                            close_matches.append(real)
-                # Si c'est le cas --> erreur
+                close_matches = realisateur_similaire(self, nom_prenom)
+
+                # Si réalisateur similaire à celui qu'on ajoute --> erreur
                 if close_matches != []:
                     formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
                     form.add_error("realisateur_nom",f"Attention, un réalisateur similaire est déjà enregistré : {formatted_matches}")
@@ -104,6 +171,15 @@ class FilmUpdate(UpdateView):
         return context
 
     def form_valid(self, form):
+        """
+        La fonction `form_valid` est chargée de valider et de sauvegarder un formulaire de film, y
+        compris de vérifier les titres de films similaires, les acteurs similaires et les réalisateurs similaires dans la base de
+        données.
+        
+        :param form: Le paramètre `form` est une instance d'une classe de formulaire Django. Il
+        représente les données du formulaire soumises par l'utilisateur
+        :return: un objet HttpResponseRedirect.
+        """
         realisateur_nom = self.request.POST.get('realisateur_nom').capitalize()
         realisateur_prenom = self.request.POST.get('realisateur_prenom').capitalize()
         force_insertion = self.request.POST.get('force-insertion-film-real') is not None
@@ -111,15 +187,9 @@ class FilmUpdate(UpdateView):
         if not force_insertion:
             form_is_invalid = False
             titre_film = self.request.POST.get('titre')
-            close_matches = []
-            # Vérification en BD si similaire titre film
-            titres_similaires = Film.objects.exclude(pk=self.object.pk if self.object else None)
-            if titres_similaires.exists():
-                self.titres_similaires = [film.titre.lower() for film in titres_similaires]
-                for film_titre in self.titres_similaires:
-                    if ratio(titre_film, film_titre) > 0.7:
-                        close_matches.append(film_titre)
-            # Si c'est le cas --> erreur
+            close_matches = titre_similaire(self, titre_film)
+
+            # Si titre similaire à celui qu'on ajoute --> erreur
             if close_matches != []:
                 formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
                 form.add_error("titre",f"Attention, d'autres films portent approximativement le même titre : {formatted_matches}")
@@ -128,15 +198,9 @@ class FilmUpdate(UpdateView):
             realisateur = Realisateur.objects.filter(nom=realisateur_nom, prenom=realisateur_prenom).first()
             if realisateur is None:
                 nom_prenom = f"{realisateur_nom.capitalize()} {realisateur_prenom.capitalize()}"
-                close_matches = []
-                # Vérification en BD si similaire realisateur
-                realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
-                if realisateurs.exists():
-                    self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
-                    for real in self.realisateurs_similaires:
-                        if ratio(nom_prenom, real) > 0.8:
-                            close_matches.append(real)
-                # Si c'est le cas --> erreur
+                close_matches = realisateur_similaire(self, nom_prenom)
+
+                # Si réalisateur similaire à celui qu'on ajoute --> erreur
                 if close_matches != []:
                     formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
                     form.add_error("realisateur_nom",f"Attention, un réalisateur similaire est déjà enregistré : {formatted_matches}")
@@ -189,10 +253,14 @@ def create_acteur_in_film(request):
             close_matches = []
             # Vérification en BD si similaire acteur
             acteurs = Acteur.objects.all()
+
+            # Si un acteur existe dans la base de données
             if acteurs.exists():
                 acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
                 for real in acteurs_similaires:
+                    # Si un acteur similaire à 80% existe dans la base de données
                     if ratio(nom_prenom, real) > 0.8:
+                        # On ajoute dans les acteurs similaires proches
                         close_matches.append(real)
             if close_matches == []:
                 acteur = form.save()
@@ -219,19 +287,22 @@ class RealisateurCreate(CreateView):
         return context
     
     def form_valid(self, form):
+        """
+        La fonction `form_valid` est chargée de valider et de sauvegarder un formulaire de film, y
+        compris de vérifier les réalisateurs similaires dans la base de données.
+        
+        :param form: Le paramètre `form` est une instance d'une classe de formulaire Django. Il
+        représente les données du formulaire soumises par l'utilisateur
+        :return: Le code renvoie le résultat de l'appel de la méthode `form_valid` de la classe parent
+        (`super().form_valid(form)`).
+        """
         force_insertion = self.request.POST.get('force-insertion') is not None
         if not force_insertion:
             nom = self.request.POST.get('nom').capitalize()
             prenom = self.request.POST.get('prenom').capitalize()
             nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
-            close_matches = []
-            # Vérification en BD si similaire realisateur
-            realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
-            if realisateurs.exists():
-                self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
-                for real in self.realisateurs_similaires:
-                    if ratio(nom_prenom, real) > 0.8:
-                        close_matches.append(real)
+            close_matches = realisateur_similaire(self, nom_prenom)
+
             # Si c'est le cas --> erreur
             if close_matches != []:
                 formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
@@ -254,19 +325,21 @@ class RealisateurUpdate(UpdateView):
         return context
     
     def form_valid(self, form):
+        """
+        La fonction `form_valid` vérifie si un réalisateur similaire est déjà enregistré et renvoie une
+        erreur si c'est le cas.
+        
+        :param form: Le paramètre `form` est l'instance de formulaire en cours de validation. Il
+        contient les données soumises par l'utilisateur
+        :return: Le code renvoie le résultat de l'appel de la méthode `form_valid` de la classe parent
+        (`super().form_valid(form)`).
+        """
         force_insertion = self.request.POST.get('force-insertion') is not None
         if not force_insertion:
             nom = self.request.POST.get('nom').capitalize()
             prenom = self.request.POST.get('prenom').capitalize()
             nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
-            close_matches = []
-            # Vérification en BD si similaire realisateur
-            realisateurs = Realisateur.objects.exclude(pk=self.object.pk if self.object else None)
-            if realisateurs.exists():
-                self.realisateurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in realisateurs]
-                for real in self.realisateurs_similaires:
-                    if ratio(nom_prenom, real) > 0.8:
-                        close_matches.append(real)
+            close_matches = realisateur_similaire(self, nom_prenom)
             # Si c'est le cas --> erreur
             if close_matches != []:
                 formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
@@ -315,19 +388,22 @@ class ActeurCreate(CreateView):
         return context
     
     def form_valid(self, form):
+        """
+        La fonction `form_valid` est chargée de valider et de sauvegarder un formulaire de film, y
+        compris de vérifier les acteurs similaires dans la base de données.
+        
+        :param form: Le paramètre `form` est une instance d'une classe de formulaire Django. Il
+        représente les données du formulaire soumises par l'utilisateur
+        :return: Le code renvoie le résultat de l'appel de la méthode `form_valid` de la classe parent
+        (`super().form_valid(form)`).
+        """
         force_insertion = self.request.POST.get('force-insertion') is not None
         if not force_insertion:
             nom = self.request.POST.get('nom').capitalize()
             prenom = self.request.POST.get('prenom').capitalize()
             nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
-            close_matches = []
-            # Vérification en BD si similaire acteur
-            acteurs = Acteur.objects.exclude(pk=self.object.pk if self.object else None)
-            if acteurs.exists():
-                self.acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
-                for real in self.acteurs_similaires:
-                    if ratio(nom_prenom, real) > 0.8:
-                        close_matches.append(real)
+            close_matches = acteur_similaire(self, nom_prenom)
+
             # Si c'est le cas --> erreur
             if close_matches != []:
                 formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
@@ -351,19 +427,22 @@ class ActeurUpdate(UpdateView):
         return context
 
     def form_valid(self, form):
+        """
+        La fonction `form_valid` est chargée de valider et de sauvegarder un formulaire de film, y
+        compris de vérifier les acteurs similaires dans la base de données.
+        
+        :param form: Le paramètre `form` est une instance d'une classe de formulaire Django. Il
+        représente les données du formulaire soumises par l'utilisateur
+        :return: Le code renvoie le résultat de l'appel de la méthode `form_valid` de la classe parent
+        (`super().form_valid(form)`).
+        """
         force_insertion = self.request.POST.get('force-insertion') is not None
         if not force_insertion:
             nom = self.request.POST.get('nom').capitalize()
             prenom = self.request.POST.get('prenom').capitalize()
             nom_prenom = f"{nom.capitalize()} {prenom.capitalize()}"
-            close_matches = []
-            # Vérification en BD si similaire acteur
-            acteurs = Acteur.objects.exclude(pk=self.object.pk if self.object else None)
-            if acteurs.exists():
-                self.acteurs_similaires = [f"{realisateur.nom.capitalize()} {realisateur.prenom.capitalize()}" for realisateur in acteurs]
-                for real in self.acteurs_similaires:
-                    if ratio(nom_prenom, real) > 0.8:
-                        close_matches.append(real)
+            close_matches = acteur_similaire(self, nom_prenom)
+
             # Si c'est le cas --> erreur
             if close_matches != []:
                 formatted_matches = ', '.join([s.capitalize() for s in close_matches])  # Capitaliser pour un meilleur affichage
