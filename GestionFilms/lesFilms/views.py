@@ -152,7 +152,7 @@ class FilmUpdate(UpdateView):
         film = form.save(commit=False)
         film.realisateur = realisateur
         film.save()
-
+        film.acteurs.set([])
         acteurs_ids = self.request.POST.getlist('acteurs')
         for acteur_id in acteurs_ids:
             acteur = Acteur.objects.get(pk=acteur_id)

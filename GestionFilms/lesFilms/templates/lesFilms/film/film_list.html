@@ -28,7 +28,9 @@
           <td>{{ film.date_creation }}</td>
           <td>
             <a href="{% url 'film_edit' film.id %}" class="btn btn-outline-primary btn-sm">Modifier</a>
-            <button type="button" class="btn btn-outline-danger btn-sm mt-1" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'film_delete' film.id %}">Supprimer</button>
+            <a href="#" class="btn btn-sm btn-outline-danger open-deleteModal mt-1" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="{% url 'film_delete' film.id %}">
+              Supprimer
+            </a>
           </td>
         </tr>
         {% endfor %}
