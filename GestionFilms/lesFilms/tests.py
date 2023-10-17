@@ -33,6 +33,95 @@ from django.urls import reverse
 from django.test import TestCase, Client
 from .models import Realisateur, Film
 
+class ActeurViewTestCase(TestCase):
+    def test_realisateur_creation(self):
+        """Teste la création réussie d'un acteur."""
+        nombre_de_acteur_initial = Acteur.objects.count()  # Assurez-vous que acteur est importé depuis vos models
+        url = reverse('acteur_add')  # Remplacez par le nom réel de votre URL pour ajouter un acteur
+
+        # Données pour un nouveau acteur
+        acteur_data = {
+            'nom': 'NomDuRealisateur',
+            'prenom': 'PrenomDuRealisateur',
+        }
+
+        # Soumettre la requête POST pour créer un nouveau acteur
+        response = self.client.post(url, acteur_data)
+
+        # Vérifier si la requête a été traitée avec succès (par exemple, si elle est redirigée vers une autre page)
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la création réussie
+
+        # Vérifier si le nombre de acteurs dans la base de données a augmenté de 1
+        nouveau_nombre_de_acteur = Acteur.objects.count()
+        self.assertEqual(nombre_de_acteur_initial + 1, nouveau_nombre_de_acteur)
+
+    def test_duplicate_acteur_name(self):
+        """Teste la tentative de création d'un acteur avec un nom et prénom qui existent déjà."""
+        url = reverse('acteur_add')  # Utilisez le nom réel de votre URL
+
+        # Créez d'abord un acteur pour simuler un nom existant
+        response = self.client.post(url, {
+            'nom': 'Dupont',
+            'prenom': 'Jean',
+        })
+
+        # Essayez de créer un acteur avec le même nom et prénom
+        response_with_duplicate_name = self.client.post(url, {
+            'nom': 'Dupont',  # nom dupliqué
+            'prenom': 'Jean',  # prénom dupliqué
+        })
+
+        # Ici, vous pouvez vérifier le code de statut ou un message d'erreur spécifique retourné par votre vue
+        self.assertEqual(response_with_duplicate_name.status_code, 200)  # Aucune redirection, la création a échoué
+
+        # Vérifiez que le nombre de acteurs n'a pas changé
+        self.assertEqual(Acteur.objects.count(), 1)
+
+
+class RealisateurViewTestCase(TestCase):
+    def test_realisateur_creation(self):
+        """Teste la création réussie d'un réalisateur."""
+        nombre_de_realisateur_initial = Realisateur.objects.count()  # Assurez-vous que Realisateur est importé depuis vos models
+        url = reverse('realisateur_add')  # Remplacez par le nom réel de votre URL pour ajouter un réalisateur
+
+        # Données pour un nouveau réalisateur
+        realisateur_data = {
+            'nom': 'NomDuRealisateur',
+            'prenom': 'PrenomDuRealisateur',
+        }
+
+        # Soumettre la requête POST pour créer un nouveau réalisateur
+        response = self.client.post(url, realisateur_data)
+
+        # Vérifier si la requête a été traitée avec succès (par exemple, si elle est redirigée vers une autre page)
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la création réussie
+
+        # Vérifier si le nombre de réalisateurs dans la base de données a augmenté de 1
+        nouveau_nombre_de_realisateur = Realisateur.objects.count()
+        self.assertEqual(nombre_de_realisateur_initial + 1, nouveau_nombre_de_realisateur)
+
+    def test_duplicate_realisateur_name(self):
+        """Teste la tentative de création d'un réalisateur avec un nom et prénom qui existent déjà."""
+        url = reverse('realisateur_add')  # Utilisez le nom réel de votre URL
+
+        # Créez d'abord un réalisateur pour simuler un nom existant
+        response = self.client.post(url, {
+            'nom': 'Dupont',
+            'prenom': 'Jean',
+        })
+
+        # Essayez de créer un réalisateur avec le même nom et prénom
+        response_with_duplicate_name = self.client.post(url, {
+            'nom': 'Dupont',  # nom dupliqué
+            'prenom': 'Jean',  # prénom dupliqué
+        })
+
+        # Ici, vous pouvez vérifier le code de statut ou un message d'erreur spécifique retourné par votre vue
+        self.assertEqual(response_with_duplicate_name.status_code, 200)  # Aucune redirection, la création a échoué
+
+        # Vérifiez que le nombre de réalisateurs n'a pas changé
+        self.assertEqual(Realisateur.objects.count(), 1)
+
 
 class FilmViewTestCase(TestCase):
     def test_film_creation(self):
@@ -75,3 +164,5 @@ class FilmViewTestCase(TestCase):
 
         # Vérifiez que le nombre de films n'a pas changé
         self.assertEqual(Film.objects.count(), 1)
+
+
