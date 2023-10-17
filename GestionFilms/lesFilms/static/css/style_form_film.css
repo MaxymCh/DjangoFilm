@@ -1,16 +1,25 @@
 .container-form {
     max-width: 800px;
     margin: 50px auto;
-    background-color: #f9f9f9;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 5px; /* rend les coins du conteneur légèrement arrondis */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* ombre légère autour du conteneur */
 }
 
 .post-form h3 {
     color: #333;
     margin-bottom: 30px;
     font-weight: 500;
+}
+body {
+    background-color: #f0f0f0; /* Couleur d'arrière-plan gris pour tout le body */
+}
+
+.form-container {
+    background-color: #f8f9fa; /* gris léger pour l'arrière-plan du formulaire */
+    padding: 20px;
+    border-radius: 5px; /* rend les coins du conteneur légèrement arrondis */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* ombre légère autour du conteneur */
 }
 
 .open-createModal {
