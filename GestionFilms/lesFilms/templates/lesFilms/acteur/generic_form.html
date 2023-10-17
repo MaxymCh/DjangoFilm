@@ -3,28 +3,29 @@
 
 {% load static %}
 {% block style %}
-<link rel="stylesheet" href="{% static 'css/style_form_film.css' %}" />
+<link rel="stylesheet" href="{% static 'css/style_form_realisateur.css' %}" />
 {% endblock %}
 
 {% block content %}
-<form method="post" class="post-form">
-    {% csrf_token %}
-    <div class="container container-form">
-        <div class="form-group row">
-            <label class="col-sm-1 col-form-label"></label>
-            <div class="col-sm-4">
-                <h3>{{ action_description }} {{ class_name }}</h3>
-            </div>
-        </div>
-        {{ form.as_p }}
-        <div class="form-group row">
-            <label class="col-sm-1 col-form-label"></label>
-            <div class="col-sm-4">
-                <input id="force-insertion" name="force-insertion" type="checkbox">
-                <label for="force-insertion">Forcer l'insertion</label>
-                <button type="submit" class="btn btn-success">Valider</button>
-            </div>
-        </div>
-    </div>
-</form>
+<div class="container mt-5">
+   <div class="row justify-content-center">
+       <div class="col-sm-8">
+           <div class="form-container">
+               <form method="post" class="post-form">
+                   {% csrf_token %}
+                   <h3 class="text-center mb-4">Créer un acteur</h3>
+                   {{ form.as_p }}
+                   <div class="form-check mb-2">
+                       <input class="form-check-input" type="checkbox" id="force-insertion" name="force-insertion">
+                       <label class="form-check-label" for="force-insertion">Forcer l'insertion</label>
+                   </div>
+                   <div class="text-center">
+                       <button type="submit" class="btn btn-success">Valider</button>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>
+</div>
 {% endblock %}
+
