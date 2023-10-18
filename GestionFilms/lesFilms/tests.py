@@ -173,6 +173,13 @@ class RealisateurViewTestCase(TestCase):
 
 class FilmViewTestCase(TestCase):
 
+    def setUp(self):
+        # Créez des instances de Realisateur, Acteur et Film qui peuvent être utilisées dans plusieurs tests
+        self.realisateur = Realisateur.objects.create(nom='Besson', prenom='Luc')
+        self.acteur = Acteur.objects.create(nom='De Niro', prenom='Robert')
+        self.film = Film.objects.create(titre='Le Grand Bleu', description ='Description pour nouveau film', date_creation='2023-10-01', realisateur=self.realisateur)
+        self.film.acteurs.add(self.acteur)
+
     def test_film_creation(self):
         """Teste la création réussie d'un film."""
         nombre_de_film_initial = Film.objects.count()
@@ -212,5 +219,33 @@ class FilmViewTestCase(TestCase):
         self.assertEqual(response_with_duplicate_title.status_code, 200)  # Aucune redirection, la création a échoué
 
         # Vérifiez que le nombre de films n'a pas changé
-        self.assertEqual(Film.objects.count(), 1)
+        self.assertEqual(Film.objects.count(), 2)
+        
+    def test_film_update(self):
+        """Teste la mise à jour réussie d'un film."""
+        url = reverse('film_edit', kwargs={'pk': self.film.pk})
+        response = self.client.post(url, {
+            'titre': 'Le Grand Bleu 2',
+            'description': 'Autre description',
+            'date_creation': '2023-11-02',
+            'realisateur_nom': 'Besson',
+            'realisateur_prenom': 'Luc',
+            'acteurs': [self.acteur.pk],
+            # Ajoutez tous les autres champs requis par votre formulaire de film
+        })
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la mise à jour réussie
+        self.film.refresh_from_db()
+        self.assertEqual(self.film.titre, 'Le Grand Bleu 2')  # Assurez-vous que le titre a bien été mis à jour
+
+    def test_film_delete(self):
+        """Teste la suppression réussie d'un film."""
+        initial_film_count = Film.objects.count()
+        url = reverse('film_delete', kwargs={'pk': self.film.pk})
+        response = self.client.post(url)  # La méthode DeleteView attend une requête POST
+        self.assertEqual(response.status_code, 302)  # Redirection attendue après la suppression réussie
+        new_film_count = Film.objects.count()
+        self.assertEqual(initial_film_count - 1, new_film_count)
+
+
+
 
