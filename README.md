@@ -27,8 +27,9 @@ Ce projet Django consiste à gérer une collection de films, en incluant des inf
 ## Lancer le Projet
 
 1. Appliquez les migrations pour configurer la base de données avec : `python manage.py migrate`
-2. Démarrez le serveur de développement avec : `python manage.py runserver`
-3. Ouvrez votre navigateur web et accédez à : `http://127.0.0.1:8000/` pour voir l'application en action.
+2. Peupler la base de données : `python manage.py loaddata lesFilms/films_fixture.json`
+3. Démarrez le serveur de développement avec : `python manage.py runserver`
+4. Ouvrez votre navigateur web et accédez à : `http://127.0.0.1:8000/` pour voir l'application en action.
 
 ## Développement
 
