@@ -11,6 +11,7 @@ Ce projet Django consiste à gérer une collection de films, en incluant des inf
 - Versionnage correct du projet avec des tags indiquant les différentes étapes.
 - Tests unitaires pour chaque étape.
 - Mise en oeuvre de Bootstrap 5 pour le styling.
+- Pagination sur l'ensemble des pages.
 
 
 ## Configuration Initiale
